@@ -1,0 +1,147 @@
+name: internal-references
+version: "1.0.0"
+description: >-
+  Detects internal AI tooling references that should not appear in
+  user-facing documents. Flags memory URIs, agent paths, steering
+  file mentions, and other implementation details.
+author: phraseturner
+tags:
+  - content-hygiene
+  - internal-tooling
+  - quality-gate
+
+tone:
+  formality: 0.5
+  confidence: 0.5
+  warmth: 0.5
+  directness: 0.5
+  energy: 0.5
+  verbosity: 0.5
+
+rules:
+  # --- URI/Path patterns (error severity — high confidence of leak) ---
+  - id: memory-uri
+    type: existence
+    level: error
+    message: "Internal memory URI detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "memory://[\\w/.-]+"
+    examples:
+      valid:
+        - "The system stores data in a database."
+        - "Check the documentation for memory management tips."
+      invalid:
+        - "See memory://research/search-pipeline for details."
+        - "Stored at memory://specs/auth-redesign."
+
+  - id: kiro-path
+    type: existence
+    level: error
+    message: "Internal .kiro/ path detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "\\.kiro/[\\w/.-]+"
+    examples:
+      valid:
+        - "Configuration files are stored in the project root."
+        - "Edit the settings file to change behaviour."
+      invalid:
+        - "See .kiro/steering/product.md for project context."
+        - "The spec is at .kiro/specs/auth/requirements.md."
+
+  - id: basic-memory-ref
+    type: existence
+    level: error
+    message: "Internal basic-memory reference detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "basic-memory:"
+      - "mcp_basic_memory_\\w+"
+    examples:
+      valid:
+        - "The system uses a knowledge base for persistence."
+        - "Search the documentation for prior decisions."
+      invalid:
+        - "Stored in basic-memory: research/cdk-analysis."
+        - "Use mcp_basic_memory_search_notes to find prior work."
+
+  - id: mcp-python-ref
+    type: existence
+    level: error
+    message: "Internal MCP Python tool reference detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "mcp_mcp_python_\\w+"
+    examples:
+      valid:
+        - "Run the Python script to process the data."
+        - "Use the execute function to run calculations."
+      invalid:
+        - "Call mcp_mcp_python_execute_python to run the code."
+        - "Use mcp_mcp_python_list_variables to inspect state."
+
+  - id: invoke-subagent-ref
+    type: existence
+    level: error
+    message: "Internal invokeSubAgent reference detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "invokeSubAgent"
+    examples:
+      valid:
+        - "Delegate the task to the appropriate service."
+        - "The system routes requests to specialised handlers."
+      invalid:
+        - "Use invokeSubAgent to delegate to the researcher."
+        - "The orchestrator calls invokeSubAgent for each task."
+
+  - id: agent-output-path
+    type: existence
+    level: error
+    message: "Internal agent-output path detected: '%s'. Remove before publishing."
+    scope: raw
+    raw:
+      - "agent-output/[\\w/.-]+"
+    examples:
+      valid:
+        - "Results are written to the output directory."
+        - "Check the reports folder for analysis results."
+      invalid:
+        - "See agent-output/researcher/2026-04-14/findings."
+        - "The report is at agent-output/code-reviewer/review.md."
+
+  # --- Terminology patterns (warning severity — may be legitimate) ---
+  - id: meta-lesson-ref
+    type: existence
+    level: warning
+    message: "Possible internal reference '%s' — verify this is intended for the audience."
+    scope: raw
+    raw:
+      - "meta-lesson"
+      - "meta-optimis"
+    examples:
+      valid:
+        - "The team documented lessons learned from the incident."
+        - "We optimised the search pipeline for latency."
+      invalid:
+        - "Captured as a meta-lesson for future sessions."
+        - "The meta-optimisation loop improved agent behaviour."
+
+  - id: implementation-detail-ref
+    type: existence
+    level: warning
+    message: "Possible implementation detail '%s' — consider rephrasing for external audience."
+    scope: raw
+    raw:
+      - "sub-agent"
+      - "steering file"
+      - "\\bhook\\b"
+    examples:
+      valid:
+        - "The system processes text in stages."
+        - "Configure the analysis pipeline via environment variables."
+      invalid:
+        - "The sub-agent delegates to the researcher."
+        - "Update the steering file to include new patterns."
+        - "The post-write hook validates spec integrity."

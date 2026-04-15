@@ -1,0 +1,145 @@
+{
+  "human_samples": [
+    {
+      "id": "h01",
+      "style": "casual",
+      "source": "synthetic — casual conversational",
+      "text": "So I finally got around to fixing that leaky tap. Took me three trips to the hardware store, which was annoying, but honestly the whole thing cost me about twelve quid. Not bad. The trick is getting the right washer size — I got it wrong twice before I figured that out."
+    },
+    {
+      "id": "h02",
+      "style": "formal",
+      "source": "synthetic — formal academic",
+      "text": "The relationship between sleep deprivation and cognitive performance has been extensively documented in the literature. Studies consistently demonstrate that adults sleeping fewer than six hours per night exhibit measurable deficits in working memory, reaction time, and executive function. These effects compound over consecutive nights of restricted sleep."
+    },
+    {
+      "id": "h03",
+      "style": "technical",
+      "source": "synthetic — technical engineering",
+      "text": "The race condition occurs when two goroutines write to the shared map without holding the mutex. I reproduced it by running the test suite with -race and got a DATA RACE on line 47. The fix is straightforward: wrap the map access in a sync.RWMutex. Read operations use RLock, writes use Lock."
+    },
+    {
+      "id": "h04",
+      "style": "narrative",
+      "source": "synthetic — personal narrative",
+      "text": "My grandmother made bread every Sunday morning. The smell would drift up the stairs and wake me before my alarm. She never used a recipe — just flour, water, salt, and whatever she felt like that day. Sometimes caraway seeds, sometimes rosemary. I've tried to replicate it for years and never quite managed."
+    },
+    {
+      "id": "h05",
+      "style": "argumentative",
+      "source": "synthetic — opinion piece",
+      "text": "Remote work has fundamentally changed what employees expect from employers. The commute was never a perk — it was a tax on workers' time that companies got for free. Now that we've proven knowledge work can happen anywhere, demanding a return to five days in the office looks less like culture and more like control."
+    },
+    {
+      "id": "h06",
+      "style": "instructional",
+      "source": "synthetic — how-to guide",
+      "text": "To make a proper roux, melt the butter over medium heat until it foams. Add the flour all at once and stir constantly — you want it to cook out the raw flour taste, which takes about two minutes. The mixture should smell nutty, not raw. Then add your liquid gradually, whisking as you go."
+    },
+    {
+      "id": "h07",
+      "style": "journalistic",
+      "source": "synthetic — news report",
+      "text": "The council voted 7-4 to approve the development last Thursday, overriding objections from local residents who had packed the public gallery. Councillor Davies, who cast the deciding vote, said the housing shortage left the council with little choice. Opponents have indicated they may seek a judicial review."
+    },
+    {
+      "id": "h08",
+      "style": "reflective",
+      "source": "synthetic — personal reflection",
+      "text": "I used to think confidence was something you either had or you didn't. It took me until my mid-thirties to realise it's more like a muscle — it atrophies when you don't use it and grows when you push past the discomfort. The people I admire most aren't fearless; they're just better at acting despite the fear."
+    },
+    {
+      "id": "h09",
+      "style": "technical_explanation",
+      "source": "synthetic — technical explanation",
+      "text": "Gradient descent works by computing the partial derivative of the loss function with respect to each weight, then nudging the weights in the direction that reduces the loss. The learning rate controls how big each nudge is. Too large and you overshoot the minimum; too small and training takes forever."
+    },
+    {
+      "id": "h10",
+      "style": "conversational_professional",
+      "source": "synthetic — professional email",
+      "text": "I've had a look at the proposal and I think the timeline is optimistic. The integration work alone will take at least three weeks — we found that out the hard way on the last project. I'd suggest building in a buffer before the client presentation. Happy to talk through the specifics if that would help."
+    }
+  ],
+  "ai_typical_samples": [
+    {
+      "id": "a01",
+      "style": "formulaic_transitions",
+      "source": "synthetic — AI-typical formulaic structure",
+      "text": "There are several important factors to consider when addressing this topic. First and foremost, it is essential to understand the underlying principles. Furthermore, it is worth noting that various stakeholders may have different perspectives. In conclusion, a comprehensive approach is necessary to achieve optimal outcomes."
+    },
+    {
+      "id": "a02",
+      "style": "hedge_stacking",
+      "source": "synthetic — AI-typical hedge stacking",
+      "text": "It is generally considered that this approach may potentially offer certain advantages in some contexts. However, it is important to note that results can vary significantly depending on various factors. While this method might be beneficial in certain situations, it is crucial to carefully evaluate whether it aligns with your specific needs and requirements."
+    },
+    {
+      "id": "a03",
+      "style": "uniform_sentence_length",
+      "source": "synthetic — AI-typical uniform sentence length",
+      "text": "Machine learning models require large amounts of training data to perform well. The quality of the data is just as important as the quantity of the data. Preprocessing steps help to clean and normalise the input data. Feature engineering can significantly improve model performance. Regularisation techniques help to prevent overfitting in the model."
+    },
+    {
+      "id": "a04",
+      "style": "comprehensive_enumeration",
+      "source": "synthetic — AI-typical comprehensive enumeration",
+      "text": "There are numerous benefits to consider when implementing this solution. These include improved efficiency, enhanced productivity, better resource utilisation, increased scalability, reduced operational costs, improved user experience, greater flexibility, enhanced security, better compliance, and streamlined workflows. Each of these benefits contributes to the overall value proposition."
+    },
+    {
+      "id": "a05",
+      "style": "balanced_both_sides",
+      "source": "synthetic — AI-typical both-sides framing",
+      "text": "This approach has both advantages and disadvantages that must be carefully weighed. On one hand, it offers significant benefits in terms of efficiency and scalability. On the other hand, there are potential drawbacks related to complexity and cost. Ultimately, the decision should be based on a thorough analysis of your specific situation and requirements."
+    },
+    {
+      "id": "a06",
+      "style": "passive_comprehensive",
+      "source": "synthetic — AI-typical passive voice and comprehensiveness",
+      "text": "It should be noted that a comprehensive framework has been developed to address these challenges. Various methodologies have been employed to ensure that all relevant factors are taken into consideration. The results obtained through this process have been carefully analysed and documented. Recommendations have been formulated based on the findings of this analysis."
+    },
+    {
+      "id": "a07",
+      "style": "empowerment_language",
+      "source": "synthetic — AI-typical empowerment framing",
+      "text": "By leveraging the power of modern technology, organisations can unlock new opportunities for growth and innovation. It is important to embrace a holistic approach that encompasses all aspects of the business ecosystem. Through strategic implementation and continuous improvement, companies can achieve sustainable competitive advantages in today's dynamic marketplace."
+    },
+    {
+      "id": "a08",
+      "style": "structured_overview",
+      "source": "synthetic — AI-typical structured overview",
+      "text": "This document provides a comprehensive overview of the key considerations involved in this process. The following sections will explore the main components, discuss the relevant factors, and outline the recommended approach. Each section builds upon the previous one to provide a complete understanding of the topic at hand."
+    },
+    {
+      "id": "a09",
+      "style": "caveat_heavy",
+      "source": "synthetic — AI-typical caveat stacking",
+      "text": "While it is difficult to make definitive statements about this complex topic, it is generally accepted that certain patterns tend to emerge under specific conditions. It is worth emphasising that individual results may vary considerably, and what works in one context may not necessarily be applicable in another. Professional guidance should always be sought before making any significant decisions."
+    },
+    {
+      "id": "a10",
+      "style": "solution_framing",
+      "source": "synthetic — AI-typical solution framing",
+      "text": "To address this challenge effectively, it is recommended to adopt a systematic and structured approach. The first step involves conducting a thorough assessment of the current situation. Subsequently, clear objectives should be established and a detailed action plan should be developed. Regular monitoring and evaluation will ensure that progress is being made towards the desired outcomes."
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-04-16",
+    "description": "Synthetic calibration set for phraseturner pipeline validation. Human samples exhibit varied sentence lengths, personal voice, concrete specifics, and natural burstiness. AI-typical samples exhibit formulaic transitions, hedge stacking, uniform sentence length, and comprehensive enumeration.",
+    "human_characteristics": [
+      "Variable sentence length (burstiness > 0.35)",
+      "Concrete specifics (numbers, names, places)",
+      "Personal voice and first-person perspective",
+      "Natural topic shifts without explicit signposting",
+      "Hapax ratio > 0.45 (diverse vocabulary)"
+    ],
+    "ai_typical_characteristics": [
+      "Formulaic transitions (first, furthermore, in conclusion)",
+      "Hedge stacking (may potentially, generally considered, it is worth noting)",
+      "Uniform sentence length (burstiness < 0.20)",
+      "Comprehensive enumeration without prioritisation",
+      "Passive voice and nominalisation"
+    ]
+  }
+}

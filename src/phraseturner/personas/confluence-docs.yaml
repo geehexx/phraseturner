@@ -1,0 +1,64 @@
+name: confluence-docs
+version: "1.0.0"
+description: >-
+  Wiki documentation — structured, clear, and context-rich. Medium-high
+  formality with low energy. Flags informal language, missing context,
+  and unexplained jargon.
+author: phraseturner
+tags:
+  - documentation
+  - wiki
+  - confluence
+  - knowledge-base
+channels:
+  - confluence
+
+tone:
+  formality: 0.6
+  confidence: 0.6
+  warmth: 0.4
+  directness: 0.5
+  energy: 0.3
+  verbosity: 0.6
+
+rules:
+  - id: confluence-no-informal
+    type: existence
+    level: warning
+    message: "Informal language detected — use neutral register for documentation."
+    tokens:
+      - gonna
+      - wanna
+      - gotta
+      - kinda
+      - sorta
+      - dunno
+      - y'all
+      - ain't
+      - nope
+      - yep
+
+  - id: confluence-missing-context
+    type: existence
+    level: suggestion
+    message: "Potential missing context — ensure readers have enough background."
+    tokens:
+      - as you know
+      - obviously
+      - of course
+      - everyone knows
+      - it goes without saying
+      - needless to say
+
+  - id: confluence-explain-jargon
+    type: existence
+    level: suggestion
+    message: "Technical jargon without explanation — consider adding a definition or link."
+    tokens:
+      - LGTM
+      - PTAL
+      - TL;DR
+      - AFAIK
+      - IIRC
+      - YMMV
+      - FWIW

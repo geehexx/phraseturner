@@ -1,0 +1,38 @@
+
+# Distribution / packaging
+# IDE
+# OS
+# Python
+# Testing
+# Type checking / linting
+# Virtual environments
+# phraseturner-specific
+*$py.class
+*.egg
+*.egg-info/
+*.onnx
+*.py[cod]
+*.so
+*.swo
+*.swp
+*.whl
+.DS_Store
+.cache/
+.coverage
+.eggs/
+.idea/
+.kiro/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+.vscode/
+/models/
+Thumbs.db
+__pycache__/
+build/
+coverage.xml
+dist/
+env/
+htmlcov/
+venv/

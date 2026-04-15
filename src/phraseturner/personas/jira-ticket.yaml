@@ -1,0 +1,58 @@
+name: jira-ticket
+version: "1.0.0"
+description: >-
+  JIRA tickets — concise, direct, and specific. Medium formality with high
+  directness and low verbosity. Flags vague descriptions, long paragraphs,
+  and missing specifics.
+author: phraseturner
+tags:
+  - jira
+  - tickets
+  - project-management
+  - issue-tracking
+channels:
+  - jira
+
+tone:
+  formality: 0.5
+  confidence: 0.7
+  warmth: 0.3
+  directness: 0.9
+  energy: 0.3
+  verbosity: 0.3
+
+rules:
+  - id: jira-no-vague-descriptions
+    type: existence
+    level: warning
+    message: "Vague description — provide specific details, steps, or acceptance criteria."
+    tokens:
+      - something is wrong
+      - it doesn't work
+      - broken somehow
+      - needs fixing
+      - not working properly
+      - seems broken
+      - various issues
+      - some problems
+
+  - id: jira-short-paragraphs
+    type: occurrence
+    level: suggestion
+    message: "Paragraph exceeds 50 words — break into shorter sections or bullet points."
+    scope: paragraph
+    max: 50
+    metric: words
+
+  - id: jira-require-specifics
+    type: existence
+    level: error
+    message: "Non-specific language — replace with concrete details (versions, URLs, error messages)."
+    tokens:
+      - sometimes
+      - occasionally
+      - a few
+      - several
+      - many times
+      - often fails
+      - rarely works

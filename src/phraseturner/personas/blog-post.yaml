@@ -1,0 +1,50 @@
+name: blog-post
+version: "1.0.0"
+description: >-
+  Blog posts — engaging, warm, and energetic. Low-medium formality with
+  high warmth and energy. Flags passive voice, long paragraphs, and
+  disengaging language.
+author: phraseturner
+tags:
+  - blog
+  - content
+  - writing
+  - marketing
+channels:
+  - blog
+
+tone:
+  formality: 0.3
+  confidence: 0.6
+  warmth: 0.7
+  directness: 0.6
+  energy: 0.8
+  verbosity: 0.5
+
+rules:
+  - id: blog-no-passive-voice
+    type: existence
+    level: warning
+    message: "Passive voice detected — use active voice for more engaging blog content."
+    raw:
+      - "\\b(?:was|were|been|being|is|are) (?:\\w+ )?(?:done|made|taken|given|shown|found|used|called)\\b"
+
+  - id: blog-short-paragraphs
+    type: occurrence
+    level: suggestion
+    message: "Paragraph exceeds 60 words — break into shorter paragraphs for readability."
+    scope: paragraph
+    max: 60
+    metric: words
+
+  - id: blog-engaging-language
+    type: existence
+    level: suggestion
+    message: "Disengaging language detected — use vivid, reader-focused phrasing."
+    tokens:
+      - it should be noted
+      - it is important to
+      - it is worth mentioning
+      - one might argue
+      - it can be said
+      - in conclusion

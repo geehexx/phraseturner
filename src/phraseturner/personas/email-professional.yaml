@@ -1,0 +1,58 @@
+name: email-professional
+version: "1.0.0"
+description: >-
+  Professional emails — polished, courteous, and structured. High formality
+  with balanced warmth and confidence. Flags casual language, missing
+  greetings or closings, and overly long sentences.
+author: phraseturner
+tags:
+  - email
+  - professional
+  - business
+  - correspondence
+channels:
+  - email
+
+tone:
+  formality: 0.7
+  confidence: 0.6
+  warmth: 0.5
+  directness: 0.5
+  energy: 0.4
+  verbosity: 0.5
+
+rules:
+  - id: email-no-casual-language
+    type: existence
+    level: warning
+    message: "Casual language detected — use professional register for emails."
+    tokens:
+      - hey
+      - gonna
+      - wanna
+      - gotta
+      - kinda
+      - btw
+      - fyi
+      - lol
+      - haha
+      - tbh
+
+  - id: email-greeting-closing
+    type: existence
+    level: suggestion
+    message: "Consider including a professional greeting or closing."
+    tokens:
+      - as per my last email
+      - per our conversation
+      - touching base
+      - circle back
+      - synergy
+
+  - id: email-sentence-length
+    type: occurrence
+    level: suggestion
+    message: "Sentence exceeds 30 words — break into shorter sentences for clarity."
+    scope: sentence
+    max: 30
+    metric: words

@@ -1,0 +1,60 @@
+name: technical-docs
+version: "1.0.0"
+description: >-
+  Technical documentation — precise, authoritative, and structured. High
+  formality and confidence with low warmth. Flags informal language,
+  ambiguous pronouns, and imprecise terminology.
+author: phraseturner
+tags:
+  - technical
+  - documentation
+  - api
+  - reference
+channels:
+  - docs
+
+tone:
+  formality: 0.8
+  confidence: 0.8
+  warmth: 0.3
+  directness: 0.7
+  energy: 0.3
+  verbosity: 0.5
+
+rules:
+  - id: techdocs-no-informal
+    type: existence
+    level: error
+    message: "Informal language in technical docs — use precise, formal register."
+    tokens:
+      - gonna
+      - wanna
+      - gotta
+      - kinda
+      - sorta
+      - stuff
+      - things
+      - basically
+      - just
+      - simply
+
+  - id: techdocs-no-ambiguous-pronouns
+    type: existence
+    level: warning
+    message: "Ambiguous pronoun — replace with the specific noun for clarity."
+    raw:
+      - "\\b(?:this|that|it|they) (?:is|are|was|were|will|can|should)\\b"
+
+  - id: techdocs-precise-terminology
+    type: existence
+    level: suggestion
+    message: "Imprecise terminology — use exact technical terms."
+    tokens:
+      - a lot of
+      - a bunch of
+      - a couple of
+      - some kind of
+      - more or less
+      - pretty much
+      - sort of
+      - kind of
