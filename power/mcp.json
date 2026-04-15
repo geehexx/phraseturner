@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "phraseturner": {
+      "command": "uvx",
+      "args": ["phraseturner"]
+    }
+  }
+}

@@ -1,0 +1,61 @@
+name: slack-casual
+version: "1.0.0"
+description: >-
+  Casual Slack messages — short, warm, and energetic. Favours contractions,
+  emoji-friendly language, and conversational tone. Flags overly formal
+  constructions and long-winded sentences.
+author: phraseturner
+tags:
+  - slack
+  - casual
+  - messaging
+  - chat
+channels:
+  - slack
+
+tone:
+  formality: 0.2
+  confidence: 0.5
+  warmth: 0.8
+  directness: 0.6
+  energy: 0.7
+  verbosity: 0.3
+
+rules:
+  - id: slack-no-formal-language
+    type: existence
+    level: warning
+    message: "Formal language detected — use casual phrasing for Slack."
+    tokens:
+      - furthermore
+      - consequently
+      - nevertheless
+      - notwithstanding
+      - aforementioned
+      - henceforth
+      - pursuant
+      - whereby
+      - herein
+      - therein
+
+  - id: slack-short-sentences
+    type: occurrence
+    level: suggestion
+    message: "Sentence exceeds 20 words — keep Slack messages short and punchy."
+    scope: sentence
+    max: 20
+    metric: words
+
+  - id: slack-use-contractions
+    type: substitution
+    level: suggestion
+    message: "Use contractions for a casual tone."
+    swap:
+      "do not": "don't"
+      "cannot": "can't"
+      "will not": "won't"
+      "it is": "it's"
+      "that is": "that's"
+      "I am": "I'm"
+      "we are": "we're"
+      "they are": "they're"

@@ -1,0 +1,57 @@
+name: pr-review
+version: "1.0.0"
+description: >-
+  Code review comments — direct, constructive, and actionable. Medium formality
+  with high directness. Flags vague feedback, passive voice, and non-actionable
+  language.
+author: phraseturner
+tags:
+  - code-review
+  - pull-request
+  - engineering
+  - feedback
+channels:
+  - pr-review
+
+tone:
+  formality: 0.5
+  confidence: 0.6
+  warmth: 0.4
+  directness: 0.8
+  energy: 0.4
+  verbosity: 0.4
+
+rules:
+  - id: pr-no-vague-language
+    type: existence
+    level: warning
+    message: "Vague language in review — be specific about what needs changing."
+    tokens:
+      - seems wrong
+      - looks off
+      - not great
+      - could be better
+      - needs work
+      - not ideal
+      - a bit odd
+      - might want to
+
+  - id: pr-no-passive-voice
+    type: existence
+    level: suggestion
+    message: "Passive voice detected — use active voice for clearer review comments."
+    raw:
+      - "\\b(?:should|could|might|may) be (?:changed|updated|fixed|refactored|improved|removed)\\b"
+
+  - id: pr-actionable-feedback
+    type: existence
+    level: error
+    message: "Non-actionable feedback — state what action the author should take."
+    tokens:
+      - I don't like this
+      - this is bad
+      - this is wrong
+      - not a fan
+      - meh
+      - nah
+      - nope

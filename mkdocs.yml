@@ -1,0 +1,38 @@
+site_name: phraseturner
+site_description: Text analysis MCP server with configurable personas
+site_url: https://geehexx.github.io/phraseturner/
+repo_url: https://github.com/geehexx/phraseturner
+repo_name: geehexx/phraseturner
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - API Reference: api-reference.md
+  - Persona Guide: persona-guide.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true

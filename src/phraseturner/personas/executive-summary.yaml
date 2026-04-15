@@ -1,0 +1,61 @@
+name: executive-summary
+version: "1.0.0"
+description: >-
+  Executive summaries — concise, confident, and authoritative. High formality
+  and confidence with very low verbosity. Flags long sentences, technical
+  jargon, and verbose language.
+author: phraseturner
+tags:
+  - executive
+  - summary
+  - leadership
+  - business
+channels:
+  - executive
+
+tone:
+  formality: 0.8
+  confidence: 0.9
+  warmth: 0.3
+  directness: 0.8
+  energy: 0.4
+  verbosity: 0.2
+
+rules:
+  - id: exec-short-sentences
+    type: occurrence
+    level: warning
+    message: "Sentence exceeds 25 words — keep executive summaries concise."
+    scope: sentence
+    max: 25
+    metric: words
+
+  - id: exec-no-jargon
+    type: existence
+    level: warning
+    message: "Technical jargon detected — use plain language for executive audience."
+    tokens:
+      - refactor
+      - microservice
+      - API endpoint
+      - middleware
+      - runtime
+      - deployment pipeline
+      - CI/CD
+      - containerised
+      - orchestration
+      - idempotent
+
+  - id: exec-concise-language
+    type: existence
+    level: suggestion
+    message: "Verbose phrasing — use concise alternatives."
+    tokens:
+      - in order to
+      - due to the fact that
+      - at this point in time
+      - in the event that
+      - for the purpose of
+      - with regard to
+      - in light of the fact
+      - it is important to note
