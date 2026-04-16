@@ -580,7 +580,7 @@ class PersonaValidator:
             try:
                 rule_config = RuleConfig(**rule_data)
             except Exception:
-                logger.debug("rule_parse_skip", rule_index=i)
+                logger.debug("rule_parse_skip", rule_index=i, exc_info=True)
                 continue
             if rule_config.type in _PLACEHOLDER_RULE_TYPES:
                 continue
