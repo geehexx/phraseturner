@@ -115,3 +115,46 @@ async def test_pipeline_include_suggestions() -> None:
     # (it may be an empty list if no flags were raised).
     if result.suggestions is not None:
         assert isinstance(result.suggestions, list)
+
+
+@pytest.mark.asyncio()
+async def test_pipeline_with_t5_enabled() -> None:
+    """Stage 3 T5 results should be populated in sentence analyses.
+
+    Mocks _run_stage3_t5 to return fake T5SentenceAnalysis objects,
+    verifying that the orchestrator correctly wires Stage 3 output
+    into the final SentenceAnalysis objects.
+
+    Validates: FR-PIPELINE-01 (Stage 3 T5 path).
+    """
+    from unittest.mock import AsyncMock, patch
+
+    from phraseturner.models.analysis import T5SentenceAnalysis
+
+    fake_t5 = T5SentenceAnalysis(
+        style_class="formal",
+        style_confidence=0.9,
+        core_meaning="test meaning",
+    )
+
+    # Provide a mock t5_model so the orchestrator enters the Stage 3 branch
+    mock_t5_model = object()
+    ctx = _make_ctx(t5_model=mock_t5_model)
+
+    with patch(
+        "phraseturner.pipeline.orchestrator._run_stage3_t5",
+        new=AsyncMock(return_value=[fake_t5]),
+    ):
+        result = await run_pipeline(
+            "Hello world. This is a test sentence.",
+            ctx,
+        )
+
+    assert isinstance(result, AnalysisResult)
+    assert len(result.sentences) >= 1
+    # At least the first sentence should have T5 analysis populated
+    assert result.sentences[0].t5_analysis is not None
+    assert result.sentences[0].t5_analysis.style_class == "formal"
+    assert result.sentences[0].t5_analysis.style_confidence == 0.9
+    assert result.sentences[0].t5_analysis.core_meaning == "test meaning"
+    assert result.metadata.t5_available is True

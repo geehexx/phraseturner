@@ -56,7 +56,8 @@ dev = [
     "pytest-asyncio",
     "pytest-cov",
     "pytest-randomly>=3.15",
-    "pytest-timeout>=2.3",
+    "pytest-timeout>=2.4",
+    "pytest-xdist>=3.7",
     "hypothesis>=6.100",
     "mypy>=1.13",
     "ruff>=0.15",
@@ -103,6 +104,13 @@ warn_unused_configs = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+timeout = 30
+filterwarnings = [
+    "error:coroutine .* was never awaited:RuntimeWarning",
+    "error:Exception ignored in.*coroutine:pytest.PytestUnraisableExceptionWarning",
+    "ignore::DeprecationWarning",
+]
 testpaths = ["tests"]
 addopts = "--cov-fail-under=80"
 

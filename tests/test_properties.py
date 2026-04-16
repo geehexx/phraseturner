@@ -170,7 +170,7 @@ class TestRoundTrip:
     @given(text=multi_sentence_text(min_sentences=1, max_sentences=3))
     @settings(max_examples=100, deadline=None)
     def test_p_rt_01_token_count_consistency(self, text: str) -> None:
-        """P-rt-01: analyze(T).metadata.token_count == len(spacy(T)).
+        """P-rt-01: token_count is positive for non-empty text and within bounds.
 
         **Validates: Requirements FR-TOOL-01.6**
         """
@@ -178,11 +178,11 @@ class TestRoundTrip:
         if nlp is None:
             pytest.skip("spaCy model not available")
         doc = nlp(text.strip())
-        expected_count = sum(1 for tok in doc if not tok.is_space)
-        assert expected_count >= 0
-        doc2 = nlp(text.strip())
-        count2 = sum(1 for tok in doc2 if not tok.is_space)
-        assert expected_count == count2
+        token_count = sum(1 for tok in doc if not tok.is_space)
+        # Non-empty text must produce at least one token
+        assert token_count > 0
+        # Token count must not exceed the max_tokens limit (8000)
+        assert token_count <= 8000
 
     @given(persona=persona_config_strategy())
     @settings(max_examples=100)
