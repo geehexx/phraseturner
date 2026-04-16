@@ -9,14 +9,20 @@ description = "Text analysis MCP server with configurable personas for readabili
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
+authors = [
+    {name = "geehexx", email = ""},
+]
+keywords = ["mcp", "text-analysis", "writing-quality", "nlp", "fastmcp", "readability", "naturalness", "persona", "style-guide", "ai-detection"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Processing :: Linguistic",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Typing :: Typed",
 ]
 dependencies = [
@@ -37,11 +43,20 @@ dependencies = [
     "numpy>=1.26",
 ]
 
+[project.urls]
+Homepage = "https://github.com/geehexx/phraseturner"
+Documentation = "https://geehexx.github.io/phraseturner"
+Changelog = "https://github.com/geehexx/phraseturner/blob/main/CHANGELOG.md"
+Issues = "https://github.com/geehexx/phraseturner/issues"
+Repository = "https://github.com/geehexx/phraseturner"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio",
     "pytest-cov",
+    "pytest-randomly>=3.15",
+    "pytest-timeout>=2.3",
     "hypothesis>=6.100",
     "mypy>=1.13",
     "ruff>=0.15",
@@ -89,6 +104,7 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+addopts = "--cov-fail-under=80"
 
 [dependency-groups]
 dev = [
