@@ -1,10 +1,11 @@
 # phraseturner
 
 [![CI](https://github.com/geehexx/phraseturner/actions/workflows/ci.yml/badge.svg)](https://github.com/geehexx/phraseturner/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)](https://github.com/geehexx/phraseturner)
+[![Coverage](https://codecov.io/gh/geehexx/phraseturner/branch/main/graph/badge.svg)](https://codecov.io/gh/geehexx/phraseturner)
 [![PyPI](https://img.shields.io/pypi/v/phraseturner)](https://pypi.org/project/phraseturner/)
 [![Python](https://img.shields.io/pypi/pyversions/phraseturner)](https://pypi.org/project/phraseturner/)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 📖 **[Documentation](https://geehexx.github.io/phraseturner)** | 🐛 **[Issues](https://github.com/geehexx/phraseturner/issues)**
 
