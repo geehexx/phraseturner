@@ -286,6 +286,7 @@ class _SentenceBuilder:
 
     sentences: list[str]
     results: _StageResults
+    t5_results: list[T5SentenceAnalysis] = dataclasses.field(default_factory=list)
 
 
 def _build_sentence_analyses(builder: _SentenceBuilder) -> list[SentenceAnalysis]:
@@ -312,6 +313,10 @@ def _build_sentence_analyses(builder: _SentenceBuilder) -> list[SentenceAnalysis
             specificity = sig.specificity
             coherence = sig.coherence_to_next
 
+        t5_analysis: T5SentenceAnalysis | None = None
+        if idx < len(builder.t5_results):
+            t5_analysis = builder.t5_results[idx]
+
         analyses.append(
             SentenceAnalysis(
                 index=idx,
@@ -323,7 +328,7 @@ def _build_sentence_analyses(builder: _SentenceBuilder) -> list[SentenceAnalysis
                 hedge_count=hedge_count,
                 specificity=specificity,
                 coherence_to_next=coherence,
-                t5_analysis=None,  # Populated by Phase 4
+                t5_analysis=t5_analysis,
             ),
         )
     return analyses
@@ -760,25 +765,27 @@ async def run_pipeline(  # noqa: PLR0913
     failed_stages.extend(results.failed)
 
     # ── Stage 3: FLAN-T5 deep analysis (skipped for quick_score) ───
+    t5_results: list[T5SentenceAnalysis] = []
     if not quick_score and ctx.t5_model is not None:
         try:
-            await _run_stage3_t5(
+            t5_results = await _run_stage3_t5(
                 sentences=sentences,
                 results=results,
                 ctx=ctx,
                 include_suggestions=include_suggestions,
-                sentence_analyses_ref=None,  # populated after stage 4
+                sentence_analyses_ref=None,
             )
         except Exception:
             logger.exception("stage3_failed")
             failed_stages.append("stage3")
+            t5_results = []
 
     # ── Stage 4: Score aggregation ─────────────────────────────────
     health_score = _run_stage4(results, ctx, focus, original_text, failed_stages)
 
     # ── Stage 5: Output formatting ─────────────────────────────────
     sentence_analyses = _build_sentence_analyses(
-        _SentenceBuilder(sentences=sentences, results=results),
+        _SentenceBuilder(sentences=sentences, results=results, t5_results=t5_results),
     )
     suggestions, persona_alignment, s5_failed = _run_stage5(
         sentence_analyses, results, ctx.persona, include_suggestions,

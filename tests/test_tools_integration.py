@@ -180,22 +180,14 @@ class TestCompareTool:
             ctx=ctx,
         )
 
-        # NOTE: The compare tool currently has a pre-existing bug where
-        # ComparisonResult is constructed with next_steps=[] but the
-        # model requires min_length=1. The error handler catches this
-        # and returns a structured INTERNAL_ERROR. When the source bug
-        # is fixed, update this test to assert on the full response.
-        if "error" in result:
-            assert result["error"]["code"] == "INTERNAL_ERROR"
-        else:
-            assert "semantic_similarity" in result
-            assert "health_score_delta" in result
-            assert "overall_improvement" in result
-            assert "sentence_alignment" in result
-            assert "next_steps" in result
-            assert "metadata" in result
-            assert isinstance(result["semantic_similarity"], float)
-            assert isinstance(result["overall_improvement"], float)
+        assert "semantic_similarity" in result
+        assert "health_score_delta" in result
+        assert "overall_improvement" in result
+        assert "sentence_alignment" in result
+        assert "next_steps" in result
+        assert "metadata" in result
+        assert isinstance(result["semantic_similarity"], float)
+        assert isinstance(result["overall_improvement"], float)
 
 
 class TestListPersonasTool:
@@ -423,12 +415,8 @@ class TestGracefulDegradation:
             ctx=ctx,
         )
 
-        # NOTE: Same pre-existing bug as TestCompareTool.test_happy_path.
-        if "error" in result:
-            assert result["error"]["code"] == "INTERNAL_ERROR"
-        else:
-            assert "semantic_similarity" in result
-            assert result["semantic_similarity"] == 0.0
+        assert "semantic_similarity" in result
+        assert result["semantic_similarity"] == 0.0
 
     @pytest.mark.asyncio
     async def test_score_t5_disabled(self, ctx: MagicMock) -> None:
