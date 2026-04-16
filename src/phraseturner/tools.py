@@ -101,7 +101,7 @@ async def _compute_semantic_similarity(
             sim = float(np.dot(vec_a, vec_b) / (norm_a * norm_b))
             return max(0.0, min(1.0, sim))
     except Exception:
-        logger.warning("compare_embedding_failed")
+        logger.warning("compare_embedding_failed", exc_info=True)
     return 0.0
 
 
