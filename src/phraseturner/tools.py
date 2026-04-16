@@ -276,7 +276,8 @@ async def analyze(  # noqa: PLR0913
     Returns:
         Analysis result dict with health_score, sentences, next_steps, and metadata.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     pipeline_ctx = _build_pipeline_ctx(lctx, persona)
 
@@ -364,7 +365,8 @@ async def score(
         Health score dict with composite_score, letter_grade, dimensions,
         next_steps, and metadata.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     pipeline_ctx = _build_pipeline_ctx(lctx, persona)
 
@@ -429,7 +431,8 @@ async def compare(
         Comparison result dict with semantic_similarity, health_score_delta,
         sentence_alignment, next_steps, and metadata.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     start_time = time.perf_counter()
 
@@ -518,7 +521,8 @@ async def list_personas(
     Returns:
         Dict with ``personas`` list of PersonaSummary dicts and ``next_steps``.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     persona_index = lctx["persona_index"]
 
@@ -596,7 +600,8 @@ async def get_persona(
     Returns:
         Dict with full persona detail and ``next_steps``.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     persona_index = lctx["persona_index"]
 
@@ -686,7 +691,8 @@ async def create_persona(
     Returns:
         Dict with name, file_path, validation result, and ``next_steps``.
     """
-    assert ctx is not None  # noqa: S101
+    if ctx is None:
+        raise RuntimeError("Server context not available")
     lctx = _get_lifespan_ctx(ctx)
     config = lctx["config"]
     persona_index = lctx["persona_index"]

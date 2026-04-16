@@ -5,6 +5,9 @@ Implements: AC-FR-PERSONA-09.1, AC-FR-PERSONA-09.2, AC-FR-T5-01.4,
 Design: §1.4
 """
 
+# Tests that override PHRASETURNER_* env vars must call get_config.cache_clear()
+# before setting env vars to avoid stale cached config.
+
 from __future__ import annotations
 
 from functools import lru_cache

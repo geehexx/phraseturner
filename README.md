@@ -6,6 +6,8 @@
 [![Python](https://img.shields.io/pypi/pyversions/phraseturner)](https://pypi.org/project/phraseturner/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+📖 **[Documentation](https://geehexx.github.io/phraseturner)** | 🐛 **[Issues](https://github.com/geehexx/phraseturner/issues)**
+
 Text analysis MCP server with configurable personas for readability, naturalness, tone, and AI detection.
 
 phraseturner analyses text and returns structured feedback — readability scores, naturalness metrics, vocabulary analysis, tone assessment, AI detection signals, and per-sentence deep analysis via FLAN-T5. It **never rewrites text**; it provides feedback that a calling LLM uses to make its own rewriting decisions.
