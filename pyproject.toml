@@ -154,3 +154,18 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "spacy.*"
 ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src/phraseturner"]
+omit = ["*/tests/*", "*/__main__.py"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@overload",
+]
