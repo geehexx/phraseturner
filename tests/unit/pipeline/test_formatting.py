@@ -320,3 +320,151 @@ class TestFormatOutput:
         assert all_flags == []
         assert suggestions == []
         assert alignment is None
+
+
+# ---------------------------------------------------------------------------
+# Regression: Bug 2 — rule violations surfaced as per-sentence flags
+# ---------------------------------------------------------------------------
+
+
+class TestRuleViolationFlags:
+    """Verify that persona rule violations appear as per-sentence Flag objects.
+
+    Regression test for Bug 2: Persona rule violations were counted in
+    PersonaAlignment but not surfaced as per-sentence Flag objects.
+    """
+
+    def test_map_rule_matches_to_flags_basic(self) -> None:
+        """RuleMatch objects should be mapped to Flag objects on matching sentences."""
+        from phraseturner.personas.rules import RuleMatch
+        from phraseturner.pipeline.formatting import _map_rule_matches_to_flags
+
+        match = RuleMatch(
+            rule_id="no-memory-uris",
+            rule_type="existence",
+            level="error",
+            message="Found memory:// URI",
+            scope="text",
+            matched_text="memory://",
+        )
+        sentence_texts = [
+            "This is a normal sentence.",
+            "Check the link at memory:// for details.",
+            "Another clean sentence.",
+        ]
+        all_flags: list[list[Flag]] = [[], [], []]
+        _map_rule_matches_to_flags([match], sentence_texts, all_flags)
+
+        assert len(all_flags[0]) == 0
+        assert len(all_flags[1]) == 1
+        assert all_flags[1][0].code == "RULE_no-memory-uris"
+        assert all_flags[1][0].severity == "error"
+        assert all_flags[1][0].message == "Found memory:// URI"
+        assert len(all_flags[2]) == 0
+
+    def test_map_rule_matches_fallback_to_first_sentence(self) -> None:
+        """When matched_text isn't in any sentence, flag goes to first sentence."""
+        from phraseturner.personas.rules import RuleMatch
+        from phraseturner.pipeline.formatting import _map_rule_matches_to_flags
+
+        match = RuleMatch(
+            rule_id="test-rule",
+            rule_type="existence",
+            level="warning",
+            message="Cross-sentence match",
+            scope="text",
+            matched_text="nonexistent fragment",
+        )
+        all_flags: list[list[Flag]] = [[], []]
+        _map_rule_matches_to_flags([match], ["Hello.", "World."], all_flags)
+
+        assert len(all_flags[0]) == 1
+        assert all_flags[0][0].code == "RULE_test-rule"
+
+    def test_map_rule_matches_multiple_sentences(self) -> None:
+        """A match appearing in multiple sentences should flag all of them."""
+        from phraseturner.personas.rules import RuleMatch
+        from phraseturner.pipeline.formatting import _map_rule_matches_to_flags
+
+        match = RuleMatch(
+            rule_id="no-agent",
+            rule_type="existence",
+            level="warning",
+            message="Found agent reference",
+            scope="text",
+            matched_text="invokeSubAgent",
+        )
+        sentence_texts = [
+            "Use invokeSubAgent to delegate.",
+            "Normal sentence here.",
+            "Another invokeSubAgent call.",
+        ]
+        all_flags: list[list[Flag]] = [[], [], []]
+        _map_rule_matches_to_flags([match], sentence_texts, all_flags)
+
+        assert len(all_flags[0]) == 1
+        assert len(all_flags[1]) == 0
+        assert len(all_flags[2]) == 1
+
+    def test_format_output_includes_rule_violation_flags(self) -> None:
+        """format_output should include rule violation flags in per-sentence flags."""
+        from phraseturner.personas.schema import (
+            PersonaConfig,
+            RuleConfig,
+            ToneConfig,
+            VocabularyConfig,
+        )
+        from phraseturner.pipeline.formatting import format_output
+
+        persona = PersonaConfig(
+            name="internal-references",
+            version="1.0.0",
+            tone=ToneConfig(formality=0.5),
+            vocabulary=VocabularyConfig(),
+            rules=[
+                RuleConfig(
+                    id="no-memory-uris",
+                    type="existence",
+                    level="error",
+                    message="Internal memory:// URI detected",
+                    raw=["memory://"],
+                ),
+            ],
+        )
+        analysis_data = {
+            "sentences": [
+                {"word_count": 8, "text": "This is a normal sentence here now."},
+                {"word_count": 10, "text": "See memory:// for the full context of this."},
+            ],
+            "tone_scores": {"formality": 0.5},
+        }
+
+        all_flags, _suggestions, alignment = format_output(
+            analysis_data,
+            persona=persona,
+            text="This is a normal sentence here now. See memory:// for the full context of this.",
+            sentences=[
+                "This is a normal sentence here now.",
+                "See memory:// for the full context of this.",
+            ],
+        )
+
+        sent1_codes = [f.code for f in all_flags[1]]
+        assert "RULE_no-memory-uris" in sent1_codes
+        assert alignment is not None
+        assert alignment.rule_violations >= 1
+
+    def test_format_output_no_rule_flags_without_persona(self) -> None:
+        """Without a persona, no rule violation flags should appear."""
+        from phraseturner.pipeline.formatting import format_output
+
+        analysis_data = {
+            "sentences": [
+                {"word_count": 10, "text": "See memory:// for details about this."},
+            ],
+        }
+        all_flags, _, alignment = format_output(analysis_data)
+
+        for flags in all_flags:
+            assert not any(f.code.startswith("RULE_") for f in flags)
+        assert alignment is None

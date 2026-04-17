@@ -1,12 +1,3 @@
-
-# Distribution / packaging
-# IDE
-# OS
-# Python
-# Testing
-# Type checking / linting
-# Virtual environments
-# phraseturner-specific
 *$py.class
 *.egg
 *.egg-info/
@@ -35,4 +26,5 @@ coverage.xml
 dist/
 env/
 htmlcov/
+test_output.txt
 venv/

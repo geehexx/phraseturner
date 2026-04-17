@@ -413,3 +413,99 @@ class TestSentenceContext:
         ctx = SentenceContext()
         with pytest.raises(AttributeError):
             ctx.length_class = "long"  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# Coverage: T5Runner inference methods (greedy + beam search)
+# ---------------------------------------------------------------------------
+
+
+class TestT5RunnerInference:
+    """T5Runner._infer, _greedy_decode, _beam_search_decode."""
+
+    def _make_runner(self) -> T5Runner:  # type: ignore[name-defined]
+        """Create a T5Runner with mock encoder/decoder sessions."""
+        from unittest.mock import MagicMock
+
+        import numpy as np
+
+        from phraseturner.t5.context import T5Runner
+
+        encoder = MagicMock()
+        decoder = MagicMock()
+        tokenizer = MagicMock()
+        tokenizer.pad_token_id = 0
+        tokenizer.eos_token_id = 1
+        tokenizer.return_value = {
+            "input_ids": np.array([[10, 20, 30, 0, 0]], dtype=np.int64),
+            "attention_mask": np.array([[1, 1, 1, 0, 0]], dtype=np.int64),
+        }
+        tokenizer.decode.return_value = "formal"
+        encoder.run.return_value = [np.random.randn(1, 5, 64).astype(np.float32)]
+
+        vocab_size = 100
+        logits = np.zeros((1, 1, vocab_size), dtype=np.float32)
+        logits[0, 0, 42] = 10.0
+        logits_eos = np.zeros((1, 1, vocab_size), dtype=np.float32)
+        logits_eos[0, 0, 1] = 10.0
+        decoder.run.side_effect = [[logits.copy()], [logits_eos.copy()]]
+
+        return T5Runner(session=(encoder, decoder), tokenizer=tokenizer)
+
+    def test_greedy_decode(self) -> None:
+        """_greedy_decode returns decoded text with confidence 1.0."""
+        import numpy as np
+        runner = self._make_runner()
+        text, confidence = runner._greedy_decode(
+            encoder_hidden=np.random.randn(1, 5, 64).astype(np.float32),
+            attention_mask=np.array([[1, 1, 1, 0, 0]], dtype=np.int64),
+            max_tokens=10,
+        )
+        assert isinstance(text, str)
+        assert confidence == 1.0
+
+    def test_beam_search_decode(self) -> None:
+        """_beam_search_decode returns decoded text with confidence in [0, 1]."""
+        from unittest.mock import MagicMock
+
+        import numpy as np
+
+        from phraseturner.t5.context import T5Runner
+
+        encoder = MagicMock()
+        decoder = MagicMock()
+        tokenizer = MagicMock()
+        tokenizer.pad_token_id = 0
+        tokenizer.eos_token_id = 1
+        tokenizer.decode.return_value = "formal"
+        vocab_size = 100
+        logits = np.zeros((1, 1, vocab_size), dtype=np.float32)
+        logits[0, 0, 1] = 10.0
+        decoder.run.return_value = [logits]
+        runner = T5Runner(session=(encoder, decoder), tokenizer=tokenizer)
+        text, confidence = runner._beam_search_decode(
+            encoder_hidden=np.random.randn(1, 5, 64).astype(np.float32),
+            attention_mask=np.array([[1, 1, 1, 0, 0]], dtype=np.int64),
+            max_tokens=5,
+            num_beams=2,
+        )
+        assert isinstance(text, str)
+        assert 0.0 <= confidence <= 1.0
+
+    def test_infer_greedy(self) -> None:
+        """_infer with use_beam=False calls greedy decode."""
+        runner = self._make_runner()
+        text, confidence = runner._infer("classify: hello", max_tokens=8, use_beam=False)
+        assert isinstance(text, str)
+        assert confidence == 1.0
+
+    async def test_run_task_delegates_to_infer(self) -> None:
+        """run_task calls _infer via to_thread."""
+        runner = self._make_runner()
+        text, confidence = await runner.run_task(
+            prompt="classify: hello",
+            max_tokens=8,
+            use_beam=False,
+        )
+        assert isinstance(text, str)
+        assert confidence == 1.0

@@ -10,11 +10,11 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 authors = [
-    {name = "geehexx", email = ""},
+    {name = "geehexx", email = "geehexx@users.noreply.github.com"},
 ]
 keywords = ["mcp", "text-analysis", "writing-quality", "nlp", "fastmcp", "readability", "naturalness", "persona", "style-guide", "ai-detection"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -114,6 +114,12 @@ filterwarnings = [
 ]
 testpaths = ["tests"]
 addopts = "--cov-fail-under=80"
+markers = [
+    "unit: fast, isolated tests with no external dependencies",
+    "integration: tests requiring model loading (1-10s)",
+    "slow: full model stack tests (>10s, excluded from default CI)",
+    "properties: Hypothesis property-based tests",
+]
 
 [dependency-groups]
 dev = [
