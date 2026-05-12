@@ -28,3 +28,7 @@ env/
 htmlcov/
 test_output.txt
 venv/
+
+# direnv — gitignore the real file, whitelist the template
+.envrc
+!.envrc.example
