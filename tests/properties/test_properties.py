@@ -271,7 +271,7 @@ class TestInvariant:
         Uses the built-in personas directory to verify count consistency.
         """
         builtin_dir = (
-            Path(__file__).resolve().parent.parent
+            Path(__file__).resolve().parent.parent.parent
             / "src" / "phraseturner" / "personas"
         )
         yaml_files = list(builtin_dir.glob("*.yaml")) + list(builtin_dir.glob("*.yml"))

@@ -13,8 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - FastMCP 3.0+ server with 7 MCP tools: `analyze`, `score`, `compare`, `list_personas`, `get_persona`, `create_persona`, `validate_persona`
 - 5-dimension health scoring: readability, naturalness, vocabulary, semantic_preservation, tone_compliance
-- 8 built-in personas: slack-casual, pr-review, confluence-docs, jira-ticket, email-professional, blog-post, technical-docs, executive-summary
-- `internal-references` content hygiene persona for detecting internal tooling references
+- 9 built-in personas: slack-casual, pr-review, confluence-docs, jira-ticket, email-professional, blog-post, technical-docs, executive-summary, internal-references
 - FLAN-T5-base INT8 ONNX integration for sentence-level style, tone, and persona compliance analysis
 - 4-tier persona directory system (project → user → remote → built-in)
 - Hot-reload of persona YAML files via watchfiles
