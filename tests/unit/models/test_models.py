@@ -10,8 +10,11 @@ from pydantic import ValidationError
 
 from phraseturner.models.analysis import (
     AnalysisMetadata,
+    AnalysisResult,
+    ConciseAnalysisResult,
     DimensionScore,
     Flag,
+    FlagsSummary,
     HealthScore,
     ResponseFormat,
     Suggestion,
@@ -391,3 +394,115 @@ class TestValidationResult:
         vr = ValidationResult(valid=False, errors=[err], warnings=[])
         assert vr.valid is False
         assert len(vr.errors) == 1
+
+
+# ---------------------------------------------------------------------------
+# Regression: Bug 1 — next_steps min_length=0 allows empty list
+# ---------------------------------------------------------------------------
+
+
+def _make_metadata() -> AnalysisMetadata:
+    """Create a minimal AnalysisMetadata for regression tests."""
+    return AnalysisMetadata(
+        model_versions={},
+        latency_ms=10.0,
+        token_count=5,
+        operating_tier=1,
+        t5_available=False,
+    )
+
+
+def _make_health_score() -> HealthScore:
+    """Create a minimal HealthScore for regression tests."""
+    return HealthScore(
+        composite_score=75.0,
+        letter_grade="B",
+        dimensions={
+            "readability": DimensionScore(score=80.0, status="good", weight=0.25),
+        },
+    )
+
+
+class TestNextStepsEmptyList:
+    """Verify that next_steps accepts an empty list (min_length removed).
+
+    Regression test for Bug 1: ComparisonResult/AnalysisResult next_steps
+    field had min_length=1, causing ValidationError when constructed with
+    an empty list.
+    """
+
+    def test_comparison_result_empty_next_steps(self) -> None:
+        """ComparisonResult should accept next_steps=[]."""
+        from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+        rebuild_comparison_models()
+        result = ComparisonResult(
+            semantic_similarity=0.9,
+            health_score_delta={},
+            overall_improvement=5.0,
+            sentence_alignment=[],
+            next_steps=[],
+            metadata=_make_metadata(),
+        )
+        assert result.next_steps == []
+
+    def test_concise_comparison_result_empty_next_steps(self) -> None:
+        """ConciseComparisonResult should accept next_steps=[]."""
+        from phraseturner.models.comparison import (
+            ConciseComparisonResult,
+            rebuild_comparison_models,
+        )
+        rebuild_comparison_models()
+        result = ConciseComparisonResult(
+            semantic_similarity=0.85,
+            overall_improvement=3.0,
+            next_steps=[],
+            metadata=_make_metadata(),
+        )
+        assert result.next_steps == []
+
+    def test_analysis_result_empty_next_steps(self) -> None:
+        """AnalysisResult should accept next_steps=[]."""
+        result = AnalysisResult(
+            health_score=_make_health_score(),
+            sentences=[],
+            next_steps=[],
+            metadata=_make_metadata(),
+        )
+        assert result.next_steps == []
+
+    def test_concise_analysis_result_empty_next_steps(self) -> None:
+        """ConciseAnalysisResult should accept next_steps=[]."""
+        result = ConciseAnalysisResult(
+            health_score=_make_health_score(),
+            flags_summary=FlagsSummary(),
+            next_steps=[],
+            metadata=_make_metadata(),
+        )
+        assert result.next_steps == []
+
+    def test_comparison_result_with_steps(self) -> None:
+        """ComparisonResult should still accept 1-3 next_steps."""
+        from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+        rebuild_comparison_models()
+        result = ComparisonResult(
+            semantic_similarity=0.9,
+            health_score_delta={},
+            overall_improvement=5.0,
+            sentence_alignment=[],
+            next_steps=["step 1", "step 2"],
+            metadata=_make_metadata(),
+        )
+        assert len(result.next_steps) == 2
+
+    def test_comparison_result_default_factory(self) -> None:
+        """ComparisonResult default_factory should produce empty list."""
+        from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+        rebuild_comparison_models()
+        result = ComparisonResult(
+            semantic_similarity=0.9,
+            health_score_delta={},
+            overall_improvement=5.0,
+            sentence_alignment=[],
+            metadata=_make_metadata(),
+        )
+        assert result.next_steps == []

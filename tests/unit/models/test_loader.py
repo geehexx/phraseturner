@@ -214,3 +214,109 @@ class TestWarmup:
 
         # Should not raise — errors are caught and logged
         await loader.warmup_t5()
+
+
+# ---------------------------------------------------------------------------
+# Coverage: optional model loading success/failure paths
+# ---------------------------------------------------------------------------
+
+
+class TestLoaderFastembedSuccess:
+    """ModelLoader.load_fastembed() success and failure paths."""
+
+    async def test_load_fastembed_success(self) -> None:
+        """load_fastembed stores the model when loading succeeds."""
+        from unittest.mock import MagicMock, patch
+        config = ServerConfig(disable_embed=False, disable_t5=True, disable_slop=True)
+        loader = ModelLoader(config)
+        mock_model = MagicMock()
+        with patch("phraseturner.models.loader.asyncio.to_thread", return_value=mock_model):
+            await loader.load_fastembed()
+        assert loader.fastembed_available
+        assert loader.fastembed is mock_model
+
+    async def test_load_fastembed_failure_graceful(self) -> None:
+        """load_fastembed logs warning on failure, does not raise."""
+        from unittest.mock import patch
+        config = ServerConfig(disable_embed=False, disable_t5=True, disable_slop=True)
+        loader = ModelLoader(config)
+        with patch(
+            "phraseturner.models.loader.asyncio.to_thread",
+            side_effect=ImportError("fastembed not installed"),
+        ):
+            await loader.load_fastembed()
+        assert not loader.fastembed_available
+
+
+class TestLoaderSlopSuccess:
+    """ModelLoader.load_slop_detector() success and failure paths."""
+
+    async def test_load_slop_detector_success(self) -> None:
+        """load_slop_detector stores the wrapper when loading succeeds."""
+        from unittest.mock import MagicMock, patch
+        config = ServerConfig(disable_slop=False, disable_t5=True, disable_embed=True)
+        loader = ModelLoader(config)
+        mock_wrapper = MagicMock()
+        with patch("phraseturner.models.loader.asyncio.to_thread", return_value=mock_wrapper):
+            await loader.load_slop_detector()
+        assert loader.slop_available
+        assert loader.slop_detector is mock_wrapper
+
+    async def test_load_slop_detector_failure_graceful(self) -> None:
+        """load_slop_detector logs warning on failure, does not raise."""
+        from unittest.mock import patch
+        config = ServerConfig(disable_slop=False, disable_t5=True, disable_embed=True)
+        loader = ModelLoader(config)
+        with patch(
+            "phraseturner.models.loader.asyncio.to_thread",
+            side_effect=ImportError("is_it_slop not installed"),
+        ):
+            await loader.load_slop_detector()
+        assert not loader.slop_available
+
+
+class TestLoaderT5:
+    """ModelLoader.load_t5() success and failure paths."""
+
+    async def test_load_t5_success(self) -> None:
+        """load_t5 stores session and tokenizer when loading succeeds."""
+        from unittest.mock import MagicMock, patch
+        config = ServerConfig(disable_t5=False, disable_slop=True, disable_embed=True)
+        loader = ModelLoader(config)
+        mock_sessions = (MagicMock(), MagicMock())
+        mock_tokenizer = MagicMock()
+        with patch(
+            "phraseturner.models.loader.asyncio.to_thread",
+            return_value=(mock_sessions, mock_tokenizer),
+        ):
+            await loader.load_t5()
+        assert loader.t5_available
+        assert loader.t5_session is mock_sessions
+        assert loader.t5_tokenizer is mock_tokenizer
+
+    async def test_load_t5_failure_graceful(self) -> None:
+        """load_t5 logs warning on failure, does not raise."""
+        from unittest.mock import patch
+        config = ServerConfig(disable_t5=False, disable_slop=True, disable_embed=True)
+        loader = ModelLoader(config)
+        with patch(
+            "phraseturner.models.loader.asyncio.to_thread",
+            side_effect=FileNotFoundError("model not found"),
+        ):
+            await loader.load_t5()
+        assert not loader.t5_available
+
+
+class TestLoaderWarmupSuccess:
+    """ModelLoader.warmup_t5() success path."""
+
+    async def test_warmup_t5_success(self) -> None:
+        """warmup_t5 completes without error when T5 is available."""
+        from unittest.mock import MagicMock, patch
+        config = ServerConfig(disable_t5=True, disable_slop=True, disable_embed=True)
+        loader = ModelLoader(config)
+        loader._t5_session = (MagicMock(), MagicMock())
+        loader._t5_tokenizer = MagicMock()
+        with patch("phraseturner.models.loader.asyncio.to_thread", return_value=None):
+            await loader.warmup_t5()
+        # No exception means success

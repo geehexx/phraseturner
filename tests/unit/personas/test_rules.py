@@ -325,3 +325,103 @@ class TestScopeFiltering:
         text = "See memory://test for info."
         matches = evaluator.evaluate(rule, text, [text])
         assert len(matches) == 1
+
+
+# ---------------------------------------------------------------------------
+# Coverage: metric rule type evaluation
+# ---------------------------------------------------------------------------
+
+
+class TestMetricRuleEvaluation:
+    """RuleEvaluator metric rule type — min/max threshold checks."""
+
+    def test_metric_rule_flesch_reading_ease_violation(self) -> None:
+        """Metric rule detects when flesch_reading_ease is below min threshold."""
+        from phraseturner.personas.rules import RuleEvaluator
+        from phraseturner.personas.schema import RuleConfig, RuleType
+
+        evaluator = RuleEvaluator()
+        rule = RuleConfig(
+            id="metric-readability",
+            type=RuleType.METRIC,
+            level="warning",
+            metric="flesch_reading_ease",
+            min=80.0,
+        )
+        text = (
+            "The implementation of the aforementioned methodological "
+            "framework necessitates a comprehensive understanding of "
+            "the multifaceted epistemological considerations inherent "
+            "in the paradigmatic analysis of sociolinguistic phenomena."
+        )
+        matches = evaluator.evaluate(rule, text, [text])
+        assert len(matches) >= 1
+        assert matches[0].rule_id == "metric-readability"
+
+    def test_metric_rule_no_violation(self) -> None:
+        """Metric rule passes when value is within thresholds."""
+        from phraseturner.personas.rules import RuleEvaluator
+        from phraseturner.personas.schema import RuleConfig, RuleType
+
+        evaluator = RuleEvaluator()
+        rule = RuleConfig(
+            id="metric-easy",
+            type=RuleType.METRIC,
+            level="warning",
+            metric="flesch_reading_ease",
+            min=0.0,
+            max=120.0,
+        )
+        text = "The cat sat on the mat. It was a nice day."
+        matches = evaluator.evaluate(rule, text, [text])
+        assert len(matches) == 0
+
+    def test_metric_rule_unknown_metric(self) -> None:
+        """Metric rule returns empty for unknown metric name."""
+        from phraseturner.personas.rules import RuleEvaluator
+        from phraseturner.personas.schema import RuleConfig, RuleType
+
+        evaluator = RuleEvaluator()
+        rule = RuleConfig(
+            id="metric-unknown",
+            type=RuleType.METRIC,
+            level="warning",
+            metric="nonexistent_metric",
+        )
+        matches = evaluator.evaluate(rule, "Some text.", ["Some text."])
+        assert len(matches) == 0
+
+    def test_metric_rule_no_metric_field(self) -> None:
+        """Metric rule returns empty when metric field is None."""
+        from phraseturner.personas.rules import RuleEvaluator
+        from phraseturner.personas.schema import RuleConfig, RuleType
+
+        evaluator = RuleEvaluator()
+        rule = RuleConfig(
+            id="metric-none",
+            type=RuleType.METRIC,
+            level="warning",
+            metric=None,
+        )
+        matches = evaluator.evaluate(rule, "Some text.", ["Some text."])
+        assert len(matches) == 0
+
+    def test_metric_rule_max_violation(self) -> None:
+        """Metric rule detects when value exceeds max threshold."""
+        from phraseturner.personas.rules import RuleEvaluator
+        from phraseturner.personas.schema import RuleConfig, RuleType
+
+        evaluator = RuleEvaluator()
+        rule = RuleConfig(
+            id="metric-max",
+            type=RuleType.METRIC,
+            level="error",
+            metric="flesch_kincaid_grade",
+            max=5.0,
+        )
+        text = (
+            "The implementation of the aforementioned methodological "
+            "framework necessitates a comprehensive understanding."
+        )
+        matches = evaluator.evaluate(rule, text, [text])
+        assert len(matches) >= 1

@@ -1,0 +1,8 @@
+# Phraseturner — Environment Variables Template
+# Copy to .envrc (gitignored) and fill in real values, then run `direnv allow`.
+
+# Exa web search — https://exa.ai/
+export EXA_API_KEY="<YOUR_EXA_KEY>"
+
+# GitHub — fine-grained PAT for repo access (used by gh CLI + MCP)
+export GITHUB_TOKEN="<YOUR_GITHUB_PAT>"
