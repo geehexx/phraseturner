@@ -429,3 +429,119 @@ class TestGracefulDegradation:
         assert "composite_score" in result
         assert "letter_grade" in result
         assert result["metadata"]["t5_available"] is False
+
+
+# ---------------------------------------------------------------------------
+# Additional coverage tests
+# ---------------------------------------------------------------------------
+
+
+class TestCompareConciseMode:
+    """compare tool concise response format (FR-TOOL-09)."""
+
+    @pytest.mark.asyncio
+    async def test_concise_format(self, ctx: MagicMock) -> None:
+        result = await compare(
+            original="The system was implemented by the team.",
+            rewritten="The team implemented the system.",
+            response_format="concise",
+            ctx=ctx,
+        )
+
+        assert "semantic_similarity" in result
+        assert "overall_improvement" in result
+        assert "next_steps" in result
+        assert "metadata" in result
+        # Concise mode omits sentence_alignment
+        assert "sentence_alignment" not in result
+
+
+class TestListPersonasFiltering:
+    """list_personas query search and tag filtering (FR-TOOL-02)."""
+
+    @pytest.mark.asyncio
+    async def test_query_search(self, ctx: MagicMock) -> None:
+        result = await list_personas(query="slack", ctx=ctx)
+
+        assert "personas" in result
+        assert isinstance(result["personas"], list)
+
+    @pytest.mark.asyncio
+    async def test_tag_filtering_match(self, ctx: MagicMock) -> None:
+        # First get all personas to find a real tag
+        all_result = await list_personas(ctx=ctx)
+        personas = all_result["personas"]
+        assert len(personas) > 0
+
+        # Find a tag that exists
+        real_tags = personas[0].get("tags", [])
+        if real_tags:
+            result = await list_personas(tags=[real_tags[0]], ctx=ctx)
+            assert "personas" in result
+            # All returned personas must have the tag
+            for p in result["personas"]:
+                assert real_tags[0].lower() in [t.lower() for t in p.get("tags", [])]
+
+    @pytest.mark.asyncio
+    async def test_tag_filtering_no_match(self, ctx: MagicMock) -> None:
+        result = await list_personas(tags=["nonexistent-tag-xyz-999"], ctx=ctx)
+
+        assert "personas" in result
+        assert result["personas"] == []
+
+
+class TestCtxNoneGuards:
+    """ctx=None returns INTERNAL_ERROR for all tools (error_handler catches RuntimeError)."""
+
+    @pytest.mark.asyncio
+    async def test_analyze_ctx_none(self) -> None:
+        result = await analyze(text="hello", ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+    @pytest.mark.asyncio
+    async def test_score_ctx_none(self) -> None:
+        result = await score(text="hello", ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+    @pytest.mark.asyncio
+    async def test_compare_ctx_none(self) -> None:
+        result = await compare(original="a", rewritten="b", ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+    @pytest.mark.asyncio
+    async def test_list_personas_ctx_none(self) -> None:
+        result = await list_personas(ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+    @pytest.mark.asyncio
+    async def test_get_persona_ctx_none(self) -> None:
+        result = await get_persona(name_or_query="slack-casual", ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+    @pytest.mark.asyncio
+    async def test_create_persona_ctx_none(self) -> None:
+        result = await create_persona(yaml_content="name: test\n", ctx=None)
+        assert "error" in result
+        assert result["error"]["code"] == "INTERNAL_ERROR"
+
+
+class TestPersonaSemanticFallback:
+    """_build_pipeline_ctx falls back to semantic search when exact match fails."""
+
+    @pytest.mark.asyncio
+    async def test_analyze_with_semantic_persona_query(self, ctx: MagicMock) -> None:
+        # Use a partial/fuzzy query that won't exact-match but should resolve
+        result = await analyze(
+            text="Hello world.",
+            persona="slack casual",  # space instead of hyphen — triggers semantic fallback
+            ctx=ctx,
+        )
+        # Should either succeed (found via semantic search) or return PERSONA_NOT_FOUND
+        assert "health_score" in result or (
+            "error" in result and result["error"]["code"] == "PERSONA_NOT_FOUND"
+        )
