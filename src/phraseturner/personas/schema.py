@@ -116,6 +116,9 @@ class Channel(StrEnum):
     BLOG = "blog"
     DOCS = "docs"
     EXECUTIVE = "executive"
+    FORK_BRIEF = "fork-brief"
+    DECISION_NOTE = "decision-note"
+    PANEL_VOTE = "panel-vote"
 
 
 class RuleExample(BaseModel):
