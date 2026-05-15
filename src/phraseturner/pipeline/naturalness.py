@@ -91,8 +91,11 @@ def _compute_length_skewness(lengths: list[int]) -> float:
     if len(lengths) < _MIN_SENTENCES_FOR_SKEWNESS:
         return 0.0
     arr = np.asarray(lengths, dtype=np.float64)
+    # Zero variance (all identical lengths) → skewness is 0; avoids scipy
+    # catastrophic-cancellation RuntimeWarning on near-constant arrays.
+    if arr.std() == 0.0:
+        return 0.0
     result = float(scipy_skew(arr, bias=True))
-    # scipy returns nan for constant arrays (zero variance)
     if math.isnan(result):
         return 0.0
     return result
