@@ -55,24 +55,24 @@ rules:
     message: "Decision note should declare a Status (Proposed / Accepted / Deprecated / Superseded)."
     scope: document
     min: 1
-    raw: "(?i)\\bstatus\\s*[:|\\-]\\s*(?:proposed|accepted|deprecated|superseded|in.?flight)\\b"
-
+    raw:
+      - "(?i)\\bstatus\\s*[:|\\-]\\s*(?:proposed|accepted|deprecated|superseded|in.?flight)\\b"
   - id: dn-needs-rationale
     type: occurrence
     level: warning
     message: "Decision note should explain WHY (Why / Rationale / Reason / Because section or token)."
     scope: document
     min: 1
-    raw: "(?i)\\b(?:why|rationale|reason(?:ing)?|because)\\b"
-
+    raw:
+      - "(?i)\\b(?:why|rationale|reason(?:ing)?|because)\\b"
   - id: dn-needs-consequences
     type: occurrence
     level: warning
     message: "Decision note should describe Consequences (positive + negative tradeoffs)."
     scope: document
     min: 1
-    raw: "(?i)\\b(?:consequences|tradeoffs|trade-offs|implications|costs|risks)\\b"
-
+    raw:
+      - "(?i)\\b(?:consequences|tradeoffs|trade-offs|implications|costs|risks)\\b"
   - id: dn-no-superlatives-without-evidence
     type: existence
     level: warning
@@ -110,5 +110,5 @@ rules:
       - game-changing
       - paradigm shift
       - synergy
-      - leverage (use uses
+      - leverage
       - turnkey

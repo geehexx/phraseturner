@@ -547,3 +547,53 @@ class TestWatchForChanges:
             await task
 
         assert index.count == initial_count
+
+
+# ---------------------------------------------------------------------------
+# Built-in agent-coordination personas (feat/agent-coordination-personas)
+# ---------------------------------------------------------------------------
+
+
+class TestAgentCoordinationPersonas:
+    """Each new agent-coordination persona must load by name from the built-in tier."""
+
+    @pytest.mark.asyncio()
+    async def test_fork_brief_persona_loads(self, tmp_path: Path) -> None:
+        """fork-brief persona loads from built-in tier."""
+        config = ServerConfig(personas_dir=tmp_path / "user")
+        index = PersonaIndex(config)
+        await index.load_all()
+        persona = index.get("fork-brief")
+        assert persona.name == "fork-brief"
+        assert index.get_tier("fork-brief") == TIER_BUILTIN
+
+    @pytest.mark.asyncio()
+    async def test_decision_note_persona_loads(self, tmp_path: Path) -> None:
+        """decision-note persona loads from built-in tier."""
+        config = ServerConfig(personas_dir=tmp_path / "user")
+        index = PersonaIndex(config)
+        await index.load_all()
+        persona = index.get("decision-note")
+        assert persona.name == "decision-note"
+        assert index.get_tier("decision-note") == TIER_BUILTIN
+
+    @pytest.mark.asyncio()
+    async def test_panel_vote_dissent_persona_loads(self, tmp_path: Path) -> None:
+        """panel-vote persona loads from built-in tier."""
+        config = ServerConfig(personas_dir=tmp_path / "user")
+        index = PersonaIndex(config)
+        await index.load_all()
+        persona = index.get("panel-vote-dissent")
+        assert persona.name == "panel-vote-dissent"
+        assert index.get_tier("panel-vote-dissent") == TIER_BUILTIN
+
+    @pytest.mark.asyncio()
+    async def test_all_three_coordination_personas_load(self, tmp_path: Path) -> None:
+        """All 3 agent-coordination personas load without error."""
+        config = ServerConfig(personas_dir=tmp_path / "user")
+        index = PersonaIndex(config)
+        await index.load_all()
+        names = {p.name for p in index.list_all()}
+        assert "fork-brief" in names
+        assert "decision-note" in names
+        assert "panel-vote-dissent" in names
