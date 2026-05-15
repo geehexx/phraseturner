@@ -1,0 +1,104 @@
+name: fork-brief
+version: "1.0.0"
+description: >-
+  Orchestrator-to-sub-agent task briefs (per delegation-contract.md §2 Context
+  Packet). High directness + medium-high formality. Flags vague goals, missing
+  acceptance criteria, lossy summaries, sycophantic openers, and phrases that
+  push synthesis onto the sub-agent rather than the orchestrator.
+author: claude-config
+tags:
+  - agent-coordination
+  - delegation
+  - sub-agent
+  - orchestrator
+channels:
+  - fork-brief
+
+tone:
+  formality: 0.7
+  confidence: 0.8
+  warmth: 0.2
+  directness: 0.95
+  energy: 0.4
+  verbosity: 0.4
+
+rules:
+  - id: fork-no-sycophancy
+    type: existence
+    level: error
+    message: "Sycophantic phrasing in fork brief — orchestrator addresses sub-agent as a peer, not flatters it."
+    tokens:
+      - great work
+      - excellent
+      - amazing
+      - wonderful
+      - thank you so much
+      - you're the best
+      - i appreciate
+      - please please
+      - kindly
+
+  - id: fork-no-vague-goals
+    type: existence
+    level: error
+    message: "Vague goal — replace with one sentence stating the OUTCOME, not the steps (delegation-contract.md §2)."
+    tokens:
+      - look into
+      - investigate generally
+      - help with
+      - work on
+      - try to
+      - see if you can
+      - poke around
+      - explore the area
+
+  - id: fork-no-synthesis-push
+    type: existence
+    level: error
+    message: "Pushing synthesis onto sub-agent — orchestrator must do the synthesis, not delegate it (anti-hallucination.md)."
+    tokens:
+      - based on your findings, fix
+      - based on the research, implement
+      - based on what you find, decide
+      - figure out what to do
+      - decide for me
+      - take it from there
+
+  - id: fork-no-restated-rules
+    type: existence
+    level: warning
+    message: "Restated standing rule — sub-agent already has rules loaded. Link, don't repeat (delegation-contract.md §2 MUST NOT include)."
+    raw:
+      - "\\bremember (?:that|to)\\b"
+      - "\\bdon't forget\\b"
+      - "\\bper ADR-\\d+ (?:use|do|don't)\\b"
+      - "\\b(?:always|never) (?:use|run|skip)\\b.*\\b(?:per|because) (?:our|the) (?:rule|convention|standard)\\b"
+
+  - id: fork-acceptance-required
+    type: occurrence
+    level: warning
+    message: "Brief should contain an explicit Acceptance section with verifiable criteria (delegation-contract.md §2)."
+    scope: document
+    min: 1
+    raw: "(?:^|\\n)(?:#+\\s*)?Acceptance(?:\\s*\\([^)]+\\))?\\s*[:|\\n]"
+
+  - id: fork-no-hedging
+    type: existence
+    level: warning
+    message: "Hedging in fork brief — replace with explicit constraint or remove."
+    tokens:
+      - if possible
+      - when you have time
+      - probably should
+      - it might be good
+      - feel free to
+      - it would be nice
+      - if you feel like
+
+  - id: fork-counter-mandatory
+    type: occurrence
+    level: warning
+    message: "Brief should require Counter in return shape (delegation-contract.md §5 Counter-factual Duty)."
+    scope: document
+    min: 1
+    raw: "\\bCounter(?:\\s*[:_-]|\\s+(?:requirement|argument|address|MUST|mandatory))"
