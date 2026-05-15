@@ -70,8 +70,8 @@ rules:
     message: "Counter should describe a specific failure mode — token like 'fails when', 'breaks if', 'loses', 'misses'."
     scope: document
     min: 1
-    raw: "\\b(?:fails when|breaks (?:if|when)|loses |misses |corrupts |over-?writes |silently drops|race condition|deadlock|starvation|panic|exhausts|runs out|exceeds|leaks|orphans|stalls)\\b"
-
+    raw:
+      - "\\b(?:fails when|breaks (?:if|when)|loses |misses |corrupts |over-?writes |silently drops|race condition|deadlock|starvation|panic|exhausts|runs out|exceeds|leaks|orphans|stalls)\\b"
   - id: dissent-no-banned-confidence
     type: existence
     level: warning
@@ -92,4 +92,5 @@ rules:
     message: "Dissent is stronger when it proposes ONE concrete alternative to the rejected plan."
     scope: document
     min: 1
-    raw: "\\b(?:propose|recommend|suggest|prefer|alternative|instead)\\b"
+    raw:
+      - "\\b(?:propose|recommend|suggest|prefer|alternative|instead)\\b"

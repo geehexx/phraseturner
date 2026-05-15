@@ -80,8 +80,8 @@ rules:
     message: "Brief should contain an explicit Acceptance section with verifiable criteria (delegation-contract.md §2)."
     scope: document
     min: 1
-    raw: "(?:^|\\n)(?:#+\\s*)?Acceptance(?:\\s*\\([^)]+\\))?\\s*[:|\\n]"
-
+    raw:
+      - "(?:^|\\n)(?:#+\\s*)?Acceptance(?:\\s*\\([^)]+\\))?\\s*[:|\\n]"
   - id: fork-no-hedging
     type: existence
     level: warning
@@ -101,4 +101,5 @@ rules:
     message: "Brief should require Counter in return shape (delegation-contract.md §5 Counter-factual Duty)."
     scope: document
     min: 1
-    raw: "\\bCounter(?:\\s*[:_-]|\\s+(?:requirement|argument|address|MUST|mandatory))"
+    raw:
+      - "\\bCounter(?:\\s*[:_-]|\\s+(?:requirement|argument|address|MUST|mandatory))"
