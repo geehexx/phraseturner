@@ -1,0 +1,96 @@
+name: panel-vote-dissent
+version: "1.0.0"
+description: >-
+  Panel-review dissent / counter-argument bodies (per panel-quorum.md and
+  delegation-contract.md §5 Counter-factual Duty). High directness, high
+  confidence, low warmth. Flags vague objections, "fishing" hedges, and
+  arguments that don't name a concrete failure mode the orchestrator can act on.
+author: claude-config
+tags:
+  - panel-review
+  - dissent
+  - counter-argument
+  - quorum
+channels:
+  - panel-vote
+
+tone:
+  formality: 0.7
+  confidence: 0.85
+  warmth: 0.2
+  directness: 0.95
+  energy: 0.5
+  verbosity: 0.4
+
+rules:
+  - id: dissent-no-vague-objection
+    type: existence
+    level: error
+    message: "Vague objection — name the specific failure mode the proposed plan introduces."
+    tokens:
+      - might not work
+      - could be problematic
+      - feels off
+      - seems risky
+      - might cause issues
+      - not ideal
+      - could go wrong
+      - not a great fit
+      - doesn't quite work
+
+  - id: dissent-no-hedge-fishing
+    type: existence
+    level: warning
+    message: "Hedging fishing — dissent must commit to a position, not gesture at uncertainty."
+    tokens:
+      - i wonder if
+      - have we considered
+      - should we maybe
+      - maybe we should
+      - perhaps it would
+      - one could argue
+      - it occurs to me
+
+  - id: dissent-no-sycophantic-soften
+    type: existence
+    level: warning
+    message: "Sycophantic softener that weakens dissent — remove the qualifier so the objection lands."
+    tokens:
+      - i hate to disagree
+      - sorry to push back
+      - just throwing it out there
+      - take this with a grain
+      - feel free to ignore
+      - i could be wrong but
+      - this is just my opinion
+
+  - id: dissent-needs-failure-mode
+    type: occurrence
+    level: warning
+    message: "Counter should describe a specific failure mode — token like 'fails when', 'breaks if', 'loses', 'misses'."
+    scope: document
+    min: 1
+    raw:
+      - "\\b(?:fails when|breaks (?:if|when)|loses |misses |corrupts |over-?writes |silently drops|race condition|deadlock|starvation|panic|exhausts|runs out|exceeds|leaks|orphans|stalls)\\b"
+  - id: dissent-no-banned-confidence
+    type: existence
+    level: warning
+    message: "Banned phrasing in dissent — use grounded language (delegation-contract.md §6)."
+    tokens:
+      - obviously
+      - clearly
+      - of course
+      - everyone knows
+      - it's well known
+      - common sense
+      - duh
+      - the optimal solution
+
+  - id: dissent-actionable-recommendation
+    type: occurrence
+    level: suggestion
+    message: "Dissent is stronger when it proposes ONE concrete alternative to the rejected plan."
+    scope: document
+    min: 1
+    raw:
+      - "\\b(?:propose|recommend|suggest|prefer|alternative|instead)\\b"
