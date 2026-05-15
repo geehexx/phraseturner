@@ -201,7 +201,7 @@ def _report_distribution(
 
 
 # ---------------------------------------------------------------------------
-# Calibration data fixture
+# Calibration data + results fixtures
 # ---------------------------------------------------------------------------
 
 
@@ -231,14 +231,37 @@ def calibration_data() -> dict[str, list[str]]:
     }
 
 
+@pytest.fixture(scope="module")
+def pipeline_results(
+    calibration_data: dict[str, list[str]],
+) -> dict[str, list[dict[str, float]]]:
+    """Run the pipeline once for all calibration texts; share across tests.
+
+    Module-scoped so the pipeline runs exactly twice (human batch + AI batch)
+    regardless of how many tests consume this fixture. Avoids repeated
+    pipeline invocations that push individual tests over the 30s timeout
+    when the full suite runs under load.
+
+    Returns:
+        Dict with ``human`` and ``ai`` keys, each a list of metric dicts.
+    """
+    ctx = _make_tier0_ctx()
+
+    async def _run_both() -> dict[str, list[dict[str, float]]]:
+        human = await _run_batch(calibration_data["human"], ctx)
+        ai = await _run_batch(calibration_data["ai"], ctx)
+        return {"human": human, "ai": ai}
+
+    return asyncio.get_event_loop().run_until_complete(_run_both())
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.asyncio()
-async def test_naturalness_human_higher_than_ai_on_average(
-    calibration_data: dict[str, list[str]],
+def test_naturalness_human_higher_than_ai_on_average(
+    pipeline_results: dict[str, list[dict[str, float]]],
 ) -> None:
     """Human text should score higher on naturalness than AI-typical text.
 
@@ -252,13 +275,8 @@ async def test_naturalness_human_higher_than_ai_on_average(
 
     Requirements: NFR-PERF-01.
     """
-    ctx = _make_tier0_ctx()
-
-    human_results = await _run_batch(calibration_data["human"], ctx)
-    ai_results = await _run_batch(calibration_data["ai"], ctx)
-
-    human_nat = [r["naturalness"] for r in human_results]
-    ai_nat = [r["naturalness"] for r in ai_results]
+    human_nat = [r["naturalness"] for r in pipeline_results["human"]]
+    ai_nat = [r["naturalness"] for r in pipeline_results["ai"]]
 
     human_mean = statistics.mean(human_nat)
     ai_mean = statistics.mean(ai_nat)
@@ -276,9 +294,8 @@ async def test_naturalness_human_higher_than_ai_on_average(
     )
 
 
-@pytest.mark.asyncio()
-async def test_composite_score_human_not_lower_than_ai(
-    calibration_data: dict[str, list[str]],
+def test_composite_score_human_not_lower_than_ai(
+    pipeline_results: dict[str, list[dict[str, float]]],
 ) -> None:
     """Human text composite score should not be systematically lower than AI-typical.
 
@@ -289,13 +306,8 @@ async def test_composite_score_human_not_lower_than_ai(
 
     Requirements: NFR-PERF-01.
     """
-    ctx = _make_tier0_ctx()
-
-    human_results = await _run_batch(calibration_data["human"], ctx)
-    ai_results = await _run_batch(calibration_data["ai"], ctx)
-
-    human_comp = [r["composite_score"] for r in human_results]
-    ai_comp = [r["composite_score"] for r in ai_results]
+    human_comp = [r["composite_score"] for r in pipeline_results["human"]]
+    ai_comp = [r["composite_score"] for r in pipeline_results["ai"]]
 
     human_mean = statistics.mean(human_comp)
     ai_mean = statistics.mean(ai_comp)
@@ -313,9 +325,8 @@ async def test_composite_score_human_not_lower_than_ai(
     )
 
 
-@pytest.mark.asyncio()
-async def test_naturalness_variance_human_higher_than_ai(
-    calibration_data: dict[str, list[str]],
+def test_naturalness_variance_human_higher_than_ai(
+    pipeline_results: dict[str, list[dict[str, float]]],
 ) -> None:
     """Human text should show higher naturalness variance than AI-typical text.
 
@@ -328,13 +339,8 @@ async def test_naturalness_variance_human_higher_than_ai(
 
     Requirements: FR-PIPELINE-04 (naturalness metrics).
     """
-    ctx = _make_tier0_ctx()
-
-    human_results = await _run_batch(calibration_data["human"], ctx)
-    ai_results = await _run_batch(calibration_data["ai"], ctx)
-
-    human_nat = [r["naturalness"] for r in human_results]
-    ai_nat = [r["naturalness"] for r in ai_results]
+    human_nat = [r["naturalness"] for r in pipeline_results["human"]]
+    ai_nat = [r["naturalness"] for r in pipeline_results["ai"]]
 
     if len(human_nat) < 5 or len(ai_nat) < 5:
         pytest.skip("Too few samples for variance comparison (need >= 5)")
@@ -412,9 +418,9 @@ async def test_pipeline_latency_within_budget(
     )
 
 
-@pytest.mark.asyncio()
-async def test_all_samples_produce_valid_results(
+def test_all_samples_produce_valid_results(
     calibration_data: dict[str, list[str]],
+    pipeline_results: dict[str, list[dict[str, float]]],
 ) -> None:
     """All calibration samples should produce valid AnalysisResult objects.
 
@@ -423,10 +429,8 @@ async def test_all_samples_produce_valid_results(
 
     Requirements: FR-PIPELINE-01 (pipeline robustness).
     """
-    ctx = _make_tier0_ctx()
     all_texts = calibration_data["human"] + calibration_data["ai"]
-
-    results = await _run_batch(all_texts, ctx)
+    results = pipeline_results["human"] + pipeline_results["ai"]
 
     failed = [
         (i, r)
@@ -437,7 +441,7 @@ async def test_all_samples_produce_valid_results(
     print(f"\n=== Pipeline Robustness: {len(results)} samples ===")
     print(f"  Valid results: {len(results) - len(failed)}/{len(results)}")
     if failed:
-        for idx, _r in failed:
+        for idx, _ in failed:
             text_preview = all_texts[idx][:60]
             print(f"  FAILED [{idx}]: score=0.0 — '{text_preview}...'")
 
@@ -447,9 +451,9 @@ async def test_all_samples_produce_valid_results(
     )
 
 
-@pytest.mark.asyncio()
-async def test_score_report(
+def test_score_report(
     calibration_data: dict[str, list[str]],
+    pipeline_results: dict[str, list[dict[str, float]]],
 ) -> None:
     """Print a full score report for all calibration samples.
 
@@ -462,14 +466,12 @@ async def test_score_report(
 
     Requirements: informational only.
     """
-    ctx = _make_tier0_ctx()
     fixture = _load_synthetic_fixture()
 
     human_texts = calibration_data["human"]
     ai_texts = calibration_data["ai"]
-
-    human_results = await _run_batch(human_texts, ctx)
-    ai_results = await _run_batch(ai_texts, ctx)
+    human_results = pipeline_results["human"]
+    ai_results = pipeline_results["ai"]
 
     print("\n" + "=" * 70)
     print("PHRASETURNER CALIBRATION REPORT")
@@ -477,7 +479,7 @@ async def test_score_report(
 
     print("\n--- Human Samples ---")
     human_samples = fixture.get("human_samples", [])
-    for i, (_text, result) in enumerate(zip(human_texts, human_results, strict=False)):
+    for i, (_, result) in enumerate(zip(human_texts, human_results, strict=False)):
         label = human_samples[i]["style"] if i < len(human_samples) else f"h{i+1:02d}"
         print(
             f"  [{label:30s}] "
@@ -488,7 +490,7 @@ async def test_score_report(
 
     print("\n--- AI-Typical Samples ---")
     ai_samples = fixture.get("ai_typical_samples", [])
-    for i, (_text, result) in enumerate(zip(ai_texts, ai_results, strict=False)):
+    for i, (_, result) in enumerate(zip(ai_texts, ai_results, strict=False)):
         label = ai_samples[i]["style"] if i < len(ai_samples) else f"a{i+1:02d}"
         print(
             f"  [{label:30s}] "
