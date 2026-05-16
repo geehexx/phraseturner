@@ -1,6 +1,6 @@
 # Contributing to phraseturner
 
-Thanks for your interest in contributing to phraseturner! This guide covers everything you need to get started.
+This guide covers the development workflow, code standards, and pull request process for phraseturner contributors.
 
 ## Prerequisites
 
