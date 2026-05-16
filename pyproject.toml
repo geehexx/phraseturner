@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "phraseturner"
-version = "0.1.0"
+version = "0.2.0"
 description = "Text analysis MCP server with configurable personas for readability, naturalness, tone, and AI detection"
 readme = "README.md"
 license = "MIT"
@@ -109,6 +109,7 @@ asyncio_default_fixture_loop_scope = "function"
 timeout = 30
 filterwarnings = [
     "error:coroutine .* was never awaited:RuntimeWarning",
+    "error:Precision loss occurred in moment calculation:RuntimeWarning",
     "error:Exception ignored in.*coroutine:pytest.PytestUnraisableExceptionWarning",
     "ignore::DeprecationWarning",
 ]
