@@ -165,17 +165,21 @@ def _check_length_flags(word_count: int) -> list[Flag]:
     """Check sentence length flags (LONG_SENTENCE, SHORT_SENTENCE)."""
     flags: list[Flag] = []
     if word_count > _LONG_SENTENCE_THRESHOLD:
-        flags.append(Flag(
-            code="LONG_SENTENCE",
-            severity="warning",
-            message=f"Sentence has {word_count} words (>{_LONG_SENTENCE_THRESHOLD})",
-        ))
+        flags.append(
+            Flag(
+                code="LONG_SENTENCE",
+                severity="warning",
+                message=f"Sentence has {word_count} words (>{_LONG_SENTENCE_THRESHOLD})",
+            )
+        )
     if word_count < _SHORT_SENTENCE_THRESHOLD:
-        flags.append(Flag(
-            code="SHORT_SENTENCE",
-            severity="suggestion",
-            message=f"Sentence has only {word_count} words",
-        ))
+        flags.append(
+            Flag(
+                code="SHORT_SENTENCE",
+                severity="suggestion",
+                message=f"Sentence has only {word_count} words",
+            )
+        )
     return flags
 
 
@@ -185,34 +189,42 @@ def _check_quality_flags(sentence_data: dict[str, Any]) -> list[Flag]:
 
     info_density = sentence_data.get("information_density")
     if info_density is not None and info_density < _LOW_DENSITY_THRESHOLD:
-        flags.append(Flag(
-            code="LOW_DENSITY",
-            severity="warning",
-            message=f"Low information density ({info_density:.2f})",
-        ))
+        flags.append(
+            Flag(
+                code="LOW_DENSITY",
+                severity="warning",
+                message=f"Low information density ({info_density:.2f})",
+            )
+        )
 
     specificity = sentence_data.get("specificity")
     if specificity is not None and specificity < _VAGUE_THRESHOLD:
-        flags.append(Flag(
-            code="VAGUE",
-            severity="suggestion",
-            message=f"Low specificity ({specificity:.2f})",
-        ))
+        flags.append(
+            Flag(
+                code="VAGUE",
+                severity="suggestion",
+                message=f"Low specificity ({specificity:.2f})",
+            )
+        )
 
     coherence = sentence_data.get("coherence_to_next")
     if coherence is not None and coherence < _LOW_COHERENCE_THRESHOLD:
-        flags.append(Flag(
-            code="LOW_COHERENCE",
-            severity="suggestion",
-            message=f"Low coherence to next sentence ({coherence:.2f})",
-        ))
+        flags.append(
+            Flag(
+                code="LOW_COHERENCE",
+                severity="suggestion",
+                message=f"Low coherence to next sentence ({coherence:.2f})",
+            )
+        )
 
     if sentence_data.get("ai_classification") == "likely-ai":
-        flags.append(Flag(
-            code="AI_PATTERN",
-            severity="warning",
-            message="Text classified as likely AI-generated",
-        ))
+        flags.append(
+            Flag(
+                code="AI_PATTERN",
+                severity="warning",
+                message="Text classified as likely AI-generated",
+            )
+        )
 
     return flags
 
@@ -230,19 +242,23 @@ def _check_metric_flags(sentence_data: dict[str, Any]) -> list[Flag]:
     flags = _check_length_flags(word_count)
 
     if sentence_data.get("passive_voice", False):
-        flags.append(Flag(
-            code="PASSIVE_VOICE",
-            severity="warning",
-            message="Passive voice detected",
-        ))
+        flags.append(
+            Flag(
+                code="PASSIVE_VOICE",
+                severity="warning",
+                message="Passive voice detected",
+            )
+        )
 
     hedge_count: int = sentence_data.get("hedge_count", 0)
     if hedge_count >= _HEDGE_COUNT_THRESHOLD:
-        flags.append(Flag(
-            code="HIGH_HEDGE_COUNT",
-            severity="warning",
-            message=f"High hedging ({hedge_count} hedge words)",
-        ))
+        flags.append(
+            Flag(
+                code="HIGH_HEDGE_COUNT",
+                severity="warning",
+                message=f"High hedging ({hedge_count} hedge words)",
+            )
+        )
 
     flags.extend(_check_quality_flags(sentence_data))
     return flags
@@ -270,34 +286,34 @@ def _check_persona_flags(
         text_lower = text.lower()
         for word in persona.vocabulary.prohibited:
             if word.lower() in text_lower:
-                flags.append(Flag(
-                    code="AVOID_WORD_HIT",
-                    severity="error",
-                    message=f"Prohibited word '{word}' detected",
-                ))
+                flags.append(
+                    Flag(
+                        code="AVOID_WORD_HIT",
+                        severity="error",
+                        message=f"Prohibited word '{word}' detected",
+                    )
+                )
                 break  # One flag per sentence for prohibited words
 
     # FORMAL_IN_CASUAL — error  AC-FR-HEALTH-05.1
-    if (
-        persona.tone.formality < _CASUAL_PERSONA_THRESHOLD
-        and _has_formal_markers(text)
-    ):
-        flags.append(Flag(
-            code="FORMAL_IN_CASUAL",
-            severity="error",
-            message="Formal language detected in casual persona",
-        ))
+    if persona.tone.formality < _CASUAL_PERSONA_THRESHOLD and _has_formal_markers(text):
+        flags.append(
+            Flag(
+                code="FORMAL_IN_CASUAL",
+                severity="error",
+                message="Formal language detected in casual persona",
+            )
+        )
 
     # CASUAL_IN_FORMAL — error  AC-FR-HEALTH-05.1
-    if (
-        persona.tone.formality > _FORMAL_PERSONA_THRESHOLD
-        and _has_contractions(text)
-    ):
-        flags.append(Flag(
-            code="CASUAL_IN_FORMAL",
-            severity="error",
-            message="Contractions detected in formal persona",
-        ))
+    if persona.tone.formality > _FORMAL_PERSONA_THRESHOLD and _has_contractions(text):
+        flags.append(
+            Flag(
+                code="CASUAL_IN_FORMAL",
+                severity="error",
+                message="Contractions detected in formal persona",
+            )
+        )
 
     return flags
 
@@ -335,11 +351,13 @@ def generate_flags(
 
     # REDUNDANT — suggestion  AC-FR-HEALTH-05.1
     if is_redundant:
-        flags.append(Flag(
-            code="REDUNDANT",
-            severity="suggestion",
-            message="Sentence is highly similar to an earlier sentence",
-        ))
+        flags.append(
+            Flag(
+                code="REDUNDANT",
+                severity="suggestion",
+                message="Sentence is highly similar to an earlier sentence",
+            )
+        )
 
     return flags
 
@@ -400,12 +418,14 @@ def generate_suggestions(
             else:
                 hint = f"Review issue: {flag.code}"
             impact = _impact_for_severity(flag.severity)
-            candidates.append(Suggestion(
-                sentence_index=sent_idx,
-                flag_code=flag.code,
-                hint=hint,
-                impact=impact,
-            ))
+            candidates.append(
+                Suggestion(
+                    sentence_index=sent_idx,
+                    flag_code=flag.code,
+                    hint=hint,
+                    impact=impact,
+                )
+            )
 
     # Sort by impact descending, then by sentence index for stability.
     candidates.sort(key=lambda s: (-s.impact, s.sentence_index))
@@ -460,9 +480,7 @@ def compute_persona_alignment(
     # Count rule violations (error or warning) vs passes.
     # rule_passes may be pre-computed by the caller (rules with zero violations).
     violation_levels = {"error", "warning"}
-    rule_violations = sum(
-        1 for m in rule_matches if m.get("level") in violation_levels
-    )
+    rule_violations = sum(1 for m in rule_matches if m.get("level") in violation_levels)
     if rule_passes is None:
         rule_passes = len(rule_matches) - rule_violations
 
@@ -499,9 +517,7 @@ def _map_rule_matches_to_flags(
         flag = Flag(
             code=f"RULE_{match.rule_id}",
             severity=(
-                match.level
-                if match.level in {"error", "warning", "suggestion"}
-                else "warning"
+                match.level if match.level in {"error", "warning", "suggestion"} else "warning"
             ),
             message=resolved_message,
         )
@@ -602,7 +618,10 @@ def format_output(
 
         rule_passes = len(persona.rules) - rule_violations_count
         alignment = compute_persona_alignment(
-            tone_scores, persona, rule_matches, rule_passes=rule_passes,
+            tone_scores,
+            persona,
+            rule_matches,
+            rule_passes=rule_passes,
         )
 
     return all_flags, suggestions, alignment

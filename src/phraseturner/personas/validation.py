@@ -50,11 +50,22 @@ SECRET_DETECTED = "SECRET_DETECTED"  # noqa: S105
 # ---------------------------------------------------------------------------
 # Secret detection patterns -- NFR-SEC-05
 # ---------------------------------------------------------------------------
-_SECRET_FIELD_NAMES = frozenset({
-    "password", "secret", "token", "api_key", "private_key",
-    "apikey", "api-key", "private-key", "secret_key", "secret-key",
-    "access_key", "access-key",
-})
+_SECRET_FIELD_NAMES = frozenset(
+    {
+        "password",
+        "secret",
+        "token",
+        "api_key",
+        "private_key",
+        "apikey",
+        "api-key",
+        "private-key",
+        "secret_key",
+        "secret-key",
+        "access_key",
+        "access-key",
+    }
+)
 
 _AWS_KEY_PATTERN = re.compile(r"AKIA[0-9A-Z]{16}")
 
@@ -67,25 +78,41 @@ _VALID_RULE_LEVELS = frozenset(rl.value for rl in RuleLevel)
 _VALID_CHANNELS = frozenset(ch.value for ch in Channel)
 
 # Tone dimension names
-_TONE_DIMENSIONS = frozenset({
-    "formality", "confidence", "warmth",
-    "directness", "energy", "verbosity",
-})
+_TONE_DIMENSIONS = frozenset(
+    {
+        "formality",
+        "confidence",
+        "warmth",
+        "directness",
+        "energy",
+        "verbosity",
+    }
+)
 
 _WEIGHTS_SUM_TOLERANCE = 0.001
 
 # Rule types that are placeholders and cannot be example-validated
-_PLACEHOLDER_RULE_TYPES = frozenset({
-    RuleType.SCRIPT, RuleType.LLM_EVAL,
-    RuleType.TONE, RuleType.BRAND_VOICE,
-    RuleType.SEQUENCE,
-})
+_PLACEHOLDER_RULE_TYPES = frozenset(
+    {
+        RuleType.SCRIPT,
+        RuleType.LLM_EVAL,
+        RuleType.TONE,
+        RuleType.BRAND_VOICE,
+        RuleType.SEQUENCE,
+    }
+)
 
 # Pydantic type-string sets for error code mapping
-_TYPE_ERROR_KINDS = frozenset({
-    "string_type", "int_type", "float_type",
-    "bool_type", "list_type", "dict_type",
-})
+_TYPE_ERROR_KINDS = frozenset(
+    {
+        "string_type",
+        "int_type",
+        "float_type",
+        "bool_type",
+        "list_type",
+        "dict_type",
+    }
+)
 
 
 class PersonaValidator:
@@ -117,24 +144,25 @@ class PersonaValidator:
         except yaml.YAMLError as exc:
             return ValidationResult(
                 valid=False,
-                errors=[ValidationError(
-                    path="",
-                    code=INVALID_YAML,
-                    message=f"YAML parsing failed: {exc}",
-                )],
+                errors=[
+                    ValidationError(
+                        path="",
+                        code=INVALID_YAML,
+                        message=f"YAML parsing failed: {exc}",
+                    )
+                ],
             )
 
         if not isinstance(data, dict):
             return ValidationResult(
                 valid=False,
-                errors=[ValidationError(
-                    path="",
-                    code=INVALID_YAML,
-                    message=(
-                        "YAML content must be a mapping, "
-                        f"got {type(data).__name__}"
-                    ),
-                )],
+                errors=[
+                    ValidationError(
+                        path="",
+                        code=INVALID_YAML,
+                        message=(f"YAML content must be a mapping, got {type(data).__name__}"),
+                    )
+                ],
             )
 
         return self.validate_dict(data)
@@ -200,11 +228,13 @@ class PersonaValidator:
         errors: list[ValidationError] = []
         for field in ("name", "version"):
             if field not in data:
-                errors.append(ValidationError(
-                    path=field,
-                    code=MISSING_REQUIRED_FIELD,
-                    message=f"Required field '{field}' is missing",
-                ))
+                errors.append(
+                    ValidationError(
+                        path=field,
+                        code=MISSING_REQUIRED_FIELD,
+                        message=f"Required field '{field}' is missing",
+                    )
+                )
         return errors
 
     @staticmethod
@@ -234,14 +264,13 @@ class PersonaValidator:
         for field, expected, label in type_checks:
             value = data.get(field)
             if value is not None and not isinstance(value, expected):
-                errors.append(ValidationError(
-                    path=field,
-                    code=INVALID_FIELD_TYPE,
-                    message=(
-                        f"Field '{field}' must be {label}, "
-                        f"got {type(value).__name__}"
-                    ),
-                ))
+                errors.append(
+                    ValidationError(
+                        path=field,
+                        code=INVALID_FIELD_TYPE,
+                        message=(f"Field '{field}' must be {label}, got {type(value).__name__}"),
+                    )
+                )
         return errors
 
     @staticmethod
@@ -262,14 +291,13 @@ class PersonaValidator:
         if isinstance(channels, list):
             for i, ch in enumerate(channels):
                 if isinstance(ch, str) and ch not in _VALID_CHANNELS:
-                    errors.append(ValidationError(
-                        path=f"channels[{i}]",
-                        code=INVALID_ENUM_VALUE,
-                        message=(
-                            f"Invalid channel '{ch}'. "
-                            f"Valid: {sorted(_VALID_CHANNELS)}"
-                        ),
-                    ))
+                    errors.append(
+                        ValidationError(
+                            path=f"channels[{i}]",
+                            code=INVALID_ENUM_VALUE,
+                            message=(f"Invalid channel '{ch}'. Valid: {sorted(_VALID_CHANNELS)}"),
+                        )
+                    )
 
         rules = data.get("rules", [])
         if isinstance(rules, list):
@@ -277,18 +305,17 @@ class PersonaValidator:
                 if not isinstance(rule, dict):
                     continue
                 level = rule.get("level")
-                if (
-                    isinstance(level, str)
-                    and level not in _VALID_RULE_LEVELS
-                ):
-                    errors.append(ValidationError(
-                        path=f"rules[{i}].level",
-                        code=INVALID_ENUM_VALUE,
-                        message=(
-                            f"Invalid rule level '{level}'. "
-                            f"Valid: {sorted(_VALID_RULE_LEVELS)}"
-                        ),
-                    ))
+                if isinstance(level, str) and level not in _VALID_RULE_LEVELS:
+                    errors.append(
+                        ValidationError(
+                            path=f"rules[{i}].level",
+                            code=INVALID_ENUM_VALUE,
+                            message=(
+                                f"Invalid rule level '{level}'. "
+                                f"Valid: {sorted(_VALID_RULE_LEVELS)}"
+                            ),
+                        )
+                    )
         return errors
 
     @staticmethod
@@ -315,14 +342,13 @@ class PersonaValidator:
                 and isinstance(value, (int, float))
                 and (value < 0.0 or value > 1.0)
             ):
-                errors.append(ValidationError(
-                    path=f"tone.{dim}",
-                    code=INVALID_RANGE,
-                    message=(
-                        f"Tone dimension '{dim}' must be "
-                        f"0.0-1.0, got {value}"
-                    ),
-                ))
+                errors.append(
+                    ValidationError(
+                        path=f"tone.{dim}",
+                        code=INVALID_RANGE,
+                        message=(f"Tone dimension '{dim}' must be 0.0-1.0, got {value}"),
+                    )
+                )
         return errors
 
     @staticmethod
@@ -339,14 +365,13 @@ class PersonaValidator:
         """
         version = data.get("version")
         if isinstance(version, str) and not _SEMVER_PATTERN.match(version):
-            return [ValidationError(
-                path="version",
-                code=INVALID_SEMVER,
-                message=(
-                    f"Version '{version}' is not valid semver "
-                    "(expected X.Y.Z)"
-                ),
-            )]
+            return [
+                ValidationError(
+                    path="version",
+                    code=INVALID_SEMVER,
+                    message=(f"Version '{version}' is not valid semver (expected X.Y.Z)"),
+                )
+            ]
         return []
 
     # ------------------------------------------------------------------
@@ -375,11 +400,13 @@ class PersonaValidator:
             )
 
             if not isinstance(exc, PydanticValidationError):
-                return [ValidationError(
-                    path="",
-                    code=INVALID_FIELD_TYPE,
-                    message=f"Schema validation failed: {exc}",
-                )]
+                return [
+                    ValidationError(
+                        path="",
+                        code=INVALID_FIELD_TYPE,
+                        message=f"Schema validation failed: {exc}",
+                    )
+                ]
 
             return _map_pydantic_errors(exc)
         return []
@@ -428,14 +455,15 @@ class PersonaValidator:
             if not isinstance(rule_id, str):
                 continue
             if rule_id in seen:
-                errors.append(ValidationError(
-                    path=f"rules[{i}].id",
-                    code=DUPLICATE_RULE_ID,
-                    message=(
-                        f"Duplicate rule ID '{rule_id}' "
-                        f"(first at rules[{seen[rule_id]}])"
-                    ),
-                ))
+                errors.append(
+                    ValidationError(
+                        path=f"rules[{i}].id",
+                        code=DUPLICATE_RULE_ID,
+                        message=(
+                            f"Duplicate rule ID '{rule_id}' (first at rules[{seen[rule_id]}])"
+                        ),
+                    )
+                )
             else:
                 seen[rule_id] = i
         return errors
@@ -466,27 +494,26 @@ class PersonaValidator:
                     try:
                         re.compile(pattern)
                     except re.error as exc:
-                        errors.append(ValidationError(
-                            path=f"rules[{i}].raw[{j}]",
-                            code=INVALID_REGEX,
-                            message=f"Invalid regex '{pattern}': {exc}",
-                        ))
+                        errors.append(
+                            ValidationError(
+                                path=f"rules[{i}].raw[{j}]",
+                                code=INVALID_REGEX,
+                                message=f"Invalid regex '{pattern}': {exc}",
+                            )
+                        )
 
             match_pattern = rule.get("match")
-            if (
-                isinstance(match_pattern, str)
-                and not match_pattern.startswith("$")
-            ):
+            if isinstance(match_pattern, str) and not match_pattern.startswith("$"):
                 try:
                     re.compile(match_pattern)
                 except re.error as exc:
-                    errors.append(ValidationError(
-                        path=f"rules[{i}].match",
-                        code=INVALID_REGEX,
-                        message=(
-                            f"Invalid regex '{match_pattern}': {exc}"
-                        ),
-                    ))
+                    errors.append(
+                        ValidationError(
+                            path=f"rules[{i}].match",
+                            code=INVALID_REGEX,
+                            message=(f"Invalid regex '{match_pattern}': {exc}"),
+                        )
+                    )
         return errors
 
     @staticmethod
@@ -506,18 +533,16 @@ class PersonaValidator:
             if not isinstance(rule, dict):
                 continue
             rule_type = rule.get("type")
-            if (
-                isinstance(rule_type, str)
-                and rule_type not in _VALID_RULE_TYPES
-            ):
-                errors.append(ValidationError(
-                    path=f"rules[{i}].type",
-                    code=INVALID_RULE_TYPE,
-                    message=(
-                        f"Invalid rule type '{rule_type}'. "
-                        f"Valid: {sorted(_VALID_RULE_TYPES)}"
-                    ),
-                ))
+            if isinstance(rule_type, str) and rule_type not in _VALID_RULE_TYPES:
+                errors.append(
+                    ValidationError(
+                        path=f"rules[{i}].type",
+                        code=INVALID_RULE_TYPE,
+                        message=(
+                            f"Invalid rule type '{rule_type}'. Valid: {sorted(_VALID_RULE_TYPES)}"
+                        ),
+                    )
+                )
         return errors
 
     @staticmethod
@@ -537,21 +562,24 @@ class PersonaValidator:
             return []
 
         weight_fields = (
-            "readability", "naturalness", "vocabulary",
-            "semantic_preservation", "tone_compliance",
+            "readability",
+            "naturalness",
+            "vocabulary",
+            "semantic_preservation",
+            "tone_compliance",
         )
         total = sum(
-            weights.get(f, 0.0)
-            for f in weight_fields
-            if isinstance(weights.get(f), (int, float))
+            weights.get(f, 0.0) for f in weight_fields if isinstance(weights.get(f), (int, float))
         )
 
         if abs(total - 1.0) > _WEIGHTS_SUM_TOLERANCE:
-            return [ValidationError(
-                path="health_score_weights",
-                code=INVALID_WEIGHTS_SUM,
-                message=f"Weights must sum to 1.0, got {total:.3f}",
-            )]
+            return [
+                ValidationError(
+                    path="health_score_weights",
+                    code=INVALID_WEIGHTS_SUM,
+                    message=f"Weights must sum to 1.0, got {total:.3f}",
+                )
+            ]
         return []
 
     def _check_examples(
@@ -587,12 +615,16 @@ class PersonaValidator:
 
             errors.extend(
                 self._validate_valid_examples(
-                    rule_config, examples, i,
+                    rule_config,
+                    examples,
+                    i,
                 ),
             )
             errors.extend(
                 self._validate_invalid_examples(
-                    rule_config, examples, i,
+                    rule_config,
+                    examples,
+                    i,
                 ),
             )
         return errors
@@ -613,14 +645,13 @@ class PersonaValidator:
                 continue
             matches = self._evaluator.evaluate(rule, example, [example])
             if matches:
-                errors.append(ValidationError(
-                    path=f"rules[{rule_idx}].examples.valid[{j}]",
-                    code=EXAMPLE_MISMATCH,
-                    message=(
-                        f"Valid example triggered rule "
-                        f"'{rule.id}': '{example}'"
-                    ),
-                ))
+                errors.append(
+                    ValidationError(
+                        path=f"rules[{rule_idx}].examples.valid[{j}]",
+                        code=EXAMPLE_MISMATCH,
+                        message=(f"Valid example triggered rule '{rule.id}': '{example}'"),
+                    )
+                )
         return errors
 
     def _validate_invalid_examples(
@@ -639,14 +670,13 @@ class PersonaValidator:
                 continue
             matches = self._evaluator.evaluate(rule, example, [example])
             if not matches:
-                errors.append(ValidationError(
-                    path=f"rules[{rule_idx}].examples.invalid[{j}]",
-                    code=EXAMPLE_MISMATCH,
-                    message=(
-                        f"Invalid example did not trigger rule "
-                        f"'{rule.id}': '{example}'"
-                    ),
-                ))
+                errors.append(
+                    ValidationError(
+                        path=f"rules[{rule_idx}].examples.invalid[{j}]",
+                        code=EXAMPLE_MISMATCH,
+                        message=(f"Invalid example did not trigger rule '{rule.id}': '{example}'"),
+                    )
+                )
         return errors
 
 
@@ -678,21 +708,25 @@ def _scan_dict_for_secrets(
                 and isinstance(value, str)
                 and value
             ):
-                warnings.append(ValidationError(
-                    path=child_path,
-                    code=SECRET_DETECTED,
-                    message=f"Potential secret in field '{key}'",
-                ))
+                warnings.append(
+                    ValidationError(
+                        path=child_path,
+                        code=SECRET_DETECTED,
+                        message=f"Potential secret in field '{key}'",
+                    )
+                )
             _scan_dict_for_secrets(value, child_path, warnings)
     elif isinstance(data, list):
         for i, item in enumerate(data):
             _scan_dict_for_secrets(item, f"{path}[{i}]", warnings)
     elif isinstance(data, str) and _AWS_KEY_PATTERN.search(data):
-        warnings.append(ValidationError(
-            path=path,
-            code=SECRET_DETECTED,
-            message="Potential AWS access key detected",
-        ))
+        warnings.append(
+            ValidationError(
+                path=path,
+                code=SECRET_DETECTED,
+                message="Potential AWS access key detected",
+            )
+        )
 
 
 def _map_pydantic_errors(

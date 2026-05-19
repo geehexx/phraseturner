@@ -119,9 +119,7 @@ class TestValidateAndThresholdFreeForm:
 
     def test_paraphrase_hints_passthrough(self) -> None:
         """Free-form tasks return output as-is."""
-        result = validate_and_threshold(
-            "Use shorter sentences", 0.30, PARAPHRASE_HINTS
-        )
+        result = validate_and_threshold("Use shorter sentences", 0.30, PARAPHRASE_HINTS)
 
         assert result.label == "Use shorter sentences"
         assert result.confidence == 0.30
@@ -129,9 +127,7 @@ class TestValidateAndThresholdFreeForm:
 
     def test_core_meaning_passthrough(self) -> None:
         """Core meaning extraction returns stripped output."""
-        result = validate_and_threshold(
-            "  factors were considered  ", 0.45, CORE_MEANING
-        )
+        result = validate_and_threshold("  factors were considered  ", 0.45, CORE_MEANING)
 
         assert result.label == "factors were considered"
         assert result.confidence == 0.45

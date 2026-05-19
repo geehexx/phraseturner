@@ -50,8 +50,7 @@ class T5TaskConfig:
 STYLE_CLASSIFICATION = T5TaskConfig(
     name="style_classification",
     prompt_template=(
-        "Classify the writing style of this sentence as formal, informal,"
-        " or neutral: {sentence}"
+        "Classify the writing style of this sentence as formal, informal, or neutral: {sentence}"
     ),
     max_tokens=8,
     threshold=0.65,
@@ -88,8 +87,7 @@ AI_PATTERN_DETECTION = T5TaskConfig(
 PARAPHRASE_HINTS = T5TaskConfig(
     name="paraphrase_hints",
     prompt_template=(
-        "Suggest a brief directive for improving this sentence"
-        " (do not rewrite it): {sentence}"
+        "Suggest a brief directive for improving this sentence (do not rewrite it): {sentence}"
     ),
     max_tokens=20,
     threshold=None,
@@ -101,10 +99,7 @@ PARAPHRASE_HINTS = T5TaskConfig(
 
 CORE_MEANING = T5TaskConfig(
     name="core_meaning",
-    prompt_template=(
-        "Extract the core meaning of this sentence in 10 words or fewer:"
-        " {sentence}"
-    ),
+    prompt_template=("Extract the core meaning of this sentence in 10 words or fewer: {sentence}"),
     max_tokens=15,
     threshold=None,
     valid_labels=None,
@@ -203,10 +198,7 @@ def format_prompt(
             is ``None``.
     """
     if "{context}" in task.prompt_template and context is None:
-        msg = (
-            f"Task '{task.name}' requires a context argument"
-            f" but None was provided"
-        )
+        msg = f"Task '{task.name}' requires a context argument but None was provided"
         raise ValueError(msg)
 
     return task.prompt_template.format(

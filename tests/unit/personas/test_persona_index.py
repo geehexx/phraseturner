@@ -67,7 +67,9 @@ class TestGetPersonaDirectories:
         assert user_dir.is_dir()
 
     def test_project_dir_included_when_exists(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """AC-FR-PERSONA-01.3: project tier included when .phraseturner/personas/ exists."""
         project_personas = tmp_path / ".phraseturner" / "personas"
@@ -79,7 +81,9 @@ class TestGetPersonaDirectories:
         assert tiers[0] == TIER_PROJECT
 
     def test_project_dir_excluded_when_missing(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Project tier excluded when directory does not exist."""
         monkeypatch.chdir(tmp_path)
@@ -89,7 +93,9 @@ class TestGetPersonaDirectories:
         assert TIER_PROJECT not in tiers
 
     def test_precedence_order(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """AC-FR-PERSONA-01.1: project → user → built-in precedence."""
         project_personas = tmp_path / ".phraseturner" / "personas"
@@ -178,15 +184,15 @@ class TestPersonaIndex:
         index = PersonaIndex(config)
         await index.load_all()
         # Built-in personas are always loaded (9 shipped with the package)
-        builtin_count = sum(
-            1 for p in index.list_all() if index.get_tier(p.name) == TIER_BUILTIN
-        )
+        builtin_count = sum(1 for p in index.list_all() if index.get_tier(p.name) == TIER_BUILTIN)
         assert index.count == builtin_count
         assert all(index.get_tier(p.name) == TIER_BUILTIN for p in index.list_all())
 
     @pytest.mark.asyncio()
     async def test_load_single_persona(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """A single valid persona is loaded and retrievable."""
         _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
@@ -236,7 +242,8 @@ class TestPersonaIndex:
 
     @pytest.mark.asyncio()
     async def test_get_tier_raises_not_found(
-        self, config: ServerConfig,
+        self,
+        config: ServerConfig,
     ) -> None:
         """get_tier() raises PersonaNotFoundError for unknown names."""
         index = PersonaIndex(config)
@@ -246,7 +253,9 @@ class TestPersonaIndex:
 
     @pytest.mark.asyncio()
     async def test_list_all_returns_all(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """list_all() returns all loaded personas (user + built-in)."""
         for i in range(3):
@@ -263,7 +272,9 @@ class TestPersonaIndex:
 
     @pytest.mark.asyncio()
     async def test_invalid_files_skipped(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Invalid YAML files are skipped without crashing."""
         _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
@@ -275,28 +286,28 @@ class TestPersonaIndex:
 
     @pytest.mark.asyncio()
     async def test_load_all_clears_previous(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Calling load_all() again replaces the previous index."""
         _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
         index = PersonaIndex(config)
         await index.load_all()
-        user_count_before = sum(
-            1 for p in index.list_all() if index.get_tier(p.name) == TIER_USER
-        )
+        user_count_before = sum(1 for p in index.list_all() if index.get_tier(p.name) == TIER_USER)
         assert user_count_before == 1
 
         # Remove the file and reload
         (user_dir / "test-persona.yaml").unlink()
         await index.load_all()
-        user_count_after = sum(
-            1 for p in index.list_all() if index.get_tier(p.name) == TIER_USER
-        )
+        user_count_after = sum(1 for p in index.list_all() if index.get_tier(p.name) == TIER_USER)
         assert user_count_after == 0
 
     @pytest.mark.asyncio()
     async def test_yml_extension_supported(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Both .yaml and .yml extensions are supported."""
         data = {"name": "yml-persona", "version": "1.0.0"}
@@ -376,7 +387,9 @@ class TestHandleUpsert:
         return ServerConfig(personas_dir=user_dir)
 
     def test_upsert_new_persona(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """A new valid persona file is added to the index."""
         path = _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
@@ -386,7 +399,9 @@ class TestHandleUpsert:
         assert index.get("test-persona").name == "test-persona"
 
     def test_upsert_invalid_retains_previous(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """AC-FR-PERSONA-04.3: invalid file retains previous version."""
         # Load a valid persona first
@@ -404,7 +419,9 @@ class TestHandleUpsert:
         assert index.get("test-persona").name == "test-persona"
 
     def test_upsert_lower_tier_does_not_override(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """A lower-tier change does not override a higher-tier persona."""
         index = PersonaIndex(config)
@@ -433,7 +450,9 @@ class TestHandleDeleted:
         return ServerConfig(personas_dir=user_dir)
 
     def test_delete_removes_persona(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Deleting a file removes the persona from the index."""
         path = _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
@@ -445,7 +464,9 @@ class TestHandleDeleted:
         assert index.count == 0
 
     def test_delete_wrong_tier_no_effect(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Deleting from a different tier has no effect."""
         path = _write_persona_yaml(user_dir, _MINIMAL_PERSONA)
@@ -458,7 +479,9 @@ class TestHandleDeleted:
         assert index.count == 1
 
     def test_delete_nonexistent_no_crash(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Deleting a file that was never loaded does not crash."""
         index = PersonaIndex(config)
@@ -484,7 +507,9 @@ class TestWatchForChanges:
 
     @pytest.mark.asyncio()
     async def test_detects_new_file(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """AC-FR-PERSONA-04.1: new persona file is detected and loaded."""
 
@@ -513,7 +538,8 @@ class TestWatchForChanges:
 
     @pytest.mark.asyncio()
     async def test_graceful_cancellation(
-        self, config: ServerConfig,
+        self,
+        config: ServerConfig,
     ) -> None:
         """Watch task handles CancelledError gracefully."""
 
@@ -527,7 +553,9 @@ class TestWatchForChanges:
 
     @pytest.mark.asyncio()
     async def test_ignores_non_yaml_files(
-        self, config: ServerConfig, user_dir: Path,
+        self,
+        config: ServerConfig,
+        user_dir: Path,
     ) -> None:
         """Non-YAML files are ignored by the watcher."""
 

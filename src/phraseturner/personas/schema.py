@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 
 _WEIGHTS_SUM_TOLERANCE = 0.001
 
+
 class ToneConfig(BaseModel):
     """6 tone dimensions, each 0.0-1.0.
 
@@ -279,7 +280,8 @@ class PersonaConfig(BaseModel):
     @field_validator("health_score_weights")
     @classmethod
     def validate_weights_sum(
-        cls, v: HealthScoreWeights | None,
+        cls,
+        v: HealthScoreWeights | None,
     ) -> HealthScoreWeights | None:
         """Validate that health score weights sum to 1.0.
 

@@ -171,7 +171,8 @@ class TestAggregateScores:
         }
 
     def test_default_weights_with_semantic(
-        self, all_scores: dict[str, float | None],
+        self,
+        all_scores: dict[str, float | None],
     ) -> None:
         result = aggregate_scores(all_scores, has_semantic=True)
         # 80*0.25 + 60*0.30 + 70*0.20 + 90*0.15 + 50*0.10 = 20+18+14+13.5+5 = 70.5
@@ -179,15 +180,13 @@ class TestAggregateScores:
         assert result.letter_grade == "B"
 
     def test_semantic_excluded_when_no_original(
-        self, four_scores: dict[str, float | None],
+        self,
+        four_scores: dict[str, float | None],
     ) -> None:
         result = aggregate_scores(four_scores, has_semantic=False)
         assert result.dimensions["semantic_preservation"] is None
         # Weights redistributed: 0.25/0.85, 0.30/0.85, 0.20/0.85, 0.10/0.85
-        scored_dims = [
-            d for d in DIMENSIONS
-            if result.dimensions[d] is not None
-        ]
+        scored_dims = [d for d in DIMENSIONS if result.dimensions[d] is not None]
         assert len(scored_dims) == 4
         # Verify weights sum to 1.0
         total_weight = sum(
@@ -197,7 +196,8 @@ class TestAggregateScores:
         assert abs(total_weight - 1.0) < 1e-6
 
     def test_persona_weight_overrides(
-        self, all_scores: dict[str, float | None],
+        self,
+        all_scores: dict[str, float | None],
     ) -> None:
         pw = HealthScoreWeights(
             readability=0.40,
@@ -207,17 +207,22 @@ class TestAggregateScores:
             tone_compliance=0.10,
         )
         result = aggregate_scores(
-            all_scores, has_semantic=True, persona_weights=pw,
+            all_scores,
+            has_semantic=True,
+            persona_weights=pw,
         )
         # 80*0.40 + 60*0.20 + 70*0.15 + 90*0.15 + 50*0.10 = 32+12+10.5+13.5+5 = 73.0
         assert result.composite_score == 73.0
         assert result.letter_grade == "B"
 
     def test_focus_readability(
-        self, four_scores: dict[str, float | None],
+        self,
+        four_scores: dict[str, float | None],
     ) -> None:
         result = aggregate_scores(
-            four_scores, focus="readability", has_semantic=False,
+            four_scores,
+            focus="readability",
+            has_semantic=False,
         )
         # readability gets 0.70 base, but semantic excluded → redistributed
         rd = result.dimensions["readability"]
@@ -234,10 +239,7 @@ class TestAggregateScores:
         result = aggregate_scores(scores, has_semantic=False)
         assert result.dimensions["naturalness"] is None
         assert result.dimensions["semantic_preservation"] is None
-        scored = [
-            d for d in DIMENSIONS
-            if result.dimensions[d] is not None
-        ]
+        scored = [d for d in DIMENSIONS if result.dimensions[d] is not None]
         assert len(scored) == 3
 
     def test_all_dimensions_none_except_one(self) -> None:
@@ -249,7 +251,8 @@ class TestAggregateScores:
         assert result.letter_grade == "A"
 
     def test_status_indicators(
-        self, all_scores: dict[str, float | None],
+        self,
+        all_scores: dict[str, float | None],
     ) -> None:
         result = aggregate_scores(all_scores, has_semantic=True)
         rd = result.dimensions["readability"]
@@ -283,10 +286,11 @@ class TestAggregateScores:
             "tone_compliance": 0.0,
         }
         result = aggregate_scores(
-            scores, weights=custom, has_semantic=False,
+            scores,
+            weights=custom,
+            has_semantic=False,
         )
         assert result.composite_score == 100.0
-
 
 
 # --- gaussian_readability_score ---
@@ -349,9 +353,14 @@ class TestGaussianReadabilityScore:
     def test_channel_targets_exist(self) -> None:
         """All expected channels are present in the targets dict."""
         expected = {
-            "slack-casual", "jira-ticket", "pr-review",
-            "confluence-docs", "technical-docs", "email-professional",
-            "blog-post", "executive-summary",
+            "slack-casual",
+            "jira-ticket",
+            "pr-review",
+            "confluence-docs",
+            "technical-docs",
+            "email-professional",
+            "blog-post",
+            "executive-summary",
         }
         assert set(CHANNEL_READABILITY_TARGETS.keys()) == expected
 
@@ -383,7 +392,9 @@ class TestAggregateScoresPersonaName:
             "tone_compliance": 50.0,
         }
         result = aggregate_scores(
-            scores, has_semantic=False, persona_name="slack-casual",
+            scores,
+            has_semantic=False,
+            persona_name="slack-casual",
         )
         assert result.composite_score > 0.0
 

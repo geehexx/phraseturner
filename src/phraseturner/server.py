@@ -101,9 +101,7 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[dict[str, Any]]:
         await models.warmup_t5()
 
     # Step 6: Start filesystem watcher for hot-reload
-    watcher_task = asyncio.create_task(
-        persona_index.watch_for_changes(models.fastembed)
-    )
+    watcher_task = asyncio.create_task(persona_index.watch_for_changes(models.fastembed))
 
     # Log startup status — FR-T5-06
     logger.info(

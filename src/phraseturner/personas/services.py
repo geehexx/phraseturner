@@ -56,6 +56,7 @@ def _sanitize_persona_name(name: str) -> str:
         )
     return name
 
+
 # Default user-tier persona directory.
 _DEFAULT_USER_DIR = Path("~/.config/phraseturner/personas")
 

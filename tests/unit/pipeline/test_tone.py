@@ -223,9 +223,7 @@ class TestNominalizations:
 
     def test_deduplicates(self) -> None:
         """Should not report the same word twice."""
-        markers = _detect_nominalizations([
-            "The implementation and implementation were good."
-        ])
+        markers = _detect_nominalizations(["The implementation and implementation were good."])
         assert markers.count("implementation") == 1
 
     def test_empty_input(self) -> None:

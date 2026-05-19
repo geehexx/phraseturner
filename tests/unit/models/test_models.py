@@ -235,8 +235,11 @@ class TestComparisonModels:
                 sentence_alignment=[],
                 next_steps=["step"],
                 metadata=AnalysisMetadata(
-                    model_versions={}, latency_ms=0, token_count=0,
-                    operating_tier=0, t5_available=False,
+                    model_versions={},
+                    latency_ms=0,
+                    token_count=0,
+                    operating_tier=0,
+                    t5_available=False,
                 ),
             )
 
@@ -249,8 +252,11 @@ class TestComparisonModels:
                 sentence_alignment=[],
                 next_steps=["step"],
                 metadata=AnalysisMetadata(
-                    model_versions={}, latency_ms=0, token_count=0,
-                    operating_tier=0, t5_available=False,
+                    model_versions={},
+                    latency_ms=0,
+                    token_count=0,
+                    operating_tier=0,
+                    t5_available=False,
                 ),
             )
 
@@ -434,6 +440,7 @@ class TestNextStepsEmptyList:
     def test_comparison_result_empty_next_steps(self) -> None:
         """ComparisonResult should accept next_steps=[]."""
         from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+
         rebuild_comparison_models()
         result = ComparisonResult(
             semantic_similarity=0.9,
@@ -451,6 +458,7 @@ class TestNextStepsEmptyList:
             ConciseComparisonResult,
             rebuild_comparison_models,
         )
+
         rebuild_comparison_models()
         result = ConciseComparisonResult(
             semantic_similarity=0.85,
@@ -483,6 +491,7 @@ class TestNextStepsEmptyList:
     def test_comparison_result_with_steps(self) -> None:
         """ComparisonResult should still accept 1-3 next_steps."""
         from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+
         rebuild_comparison_models()
         result = ComparisonResult(
             semantic_similarity=0.9,
@@ -497,6 +506,7 @@ class TestNextStepsEmptyList:
     def test_comparison_result_default_factory(self) -> None:
         """ComparisonResult default_factory should produce empty list."""
         from phraseturner.models.comparison import ComparisonResult, rebuild_comparison_models
+
         rebuild_comparison_models()
         result = ComparisonResult(
             semantic_similarity=0.9,

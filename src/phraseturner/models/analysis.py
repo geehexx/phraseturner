@@ -233,9 +233,7 @@ class AnalysisResult(BaseModel):
     sentences: list[SentenceAnalysis]
     persona_alignment: PersonaAlignment | None = None
     suggestions: list[Suggestion] | None = None
-    next_steps: list[str] = Field(
-        default_factory=list, max_length=3
-    )
+    next_steps: list[str] = Field(default_factory=list, max_length=3)
     metadata: AnalysisMetadata
 
 
@@ -275,7 +273,5 @@ class ConciseAnalysisResult(BaseModel):
 
     health_score: HealthScore
     flags_summary: FlagsSummary
-    next_steps: list[str] = Field(
-        default_factory=list, max_length=3
-    )
+    next_steps: list[str] = Field(default_factory=list, max_length=3)
     metadata: AnalysisMetadata

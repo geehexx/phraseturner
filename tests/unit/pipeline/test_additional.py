@@ -200,7 +200,8 @@ class TestCoherence:
         doc = nlp("The cat sat on the mat. The cat then jumped off the mat.")
         spans = list(doc.sents)
         coherence = _compute_coherence_pair(
-            spans[0], spans[1],
+            spans[0],
+            spans[1],
             "The cat sat on the mat.",
             "The cat then jumped off the mat.",
         )
@@ -210,7 +211,8 @@ class TestCoherence:
 
     def test_coherence_pair_without_spacy(self) -> None:
         coherence = _compute_coherence_pair(
-            None, None,
+            None,
+            None,
             "The cat sat on the mat.",
             "The dog ran in the park.",
         )

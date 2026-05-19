@@ -455,6 +455,7 @@ class TestT5RunnerInference:
     def test_greedy_decode(self) -> None:
         """_greedy_decode returns decoded text with confidence 1.0."""
         import numpy as np
+
         runner = self._make_runner()
         text, confidence = runner._greedy_decode(
             encoder_hidden=np.random.randn(1, 5, 64).astype(np.float32),

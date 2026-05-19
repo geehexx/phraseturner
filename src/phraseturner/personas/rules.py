@@ -50,10 +50,29 @@ _PARAGRAPH_SEPARATOR = re.compile(r"\n\s*\n")
 _METRIC_TRUNCATE_LEN = 50
 
 # Small words exempt from title-case capitalisation
-_TITLE_CASE_EXEMPT = frozenset({
-    "a", "an", "and", "as", "at", "but", "by", "for", "if", "in",
-    "nor", "of", "on", "or", "so", "the", "to", "up", "yet",
-})
+_TITLE_CASE_EXEMPT = frozenset(
+    {
+        "a",
+        "an",
+        "and",
+        "as",
+        "at",
+        "but",
+        "by",
+        "for",
+        "if",
+        "in",
+        "nor",
+        "of",
+        "on",
+        "or",
+        "so",
+        "the",
+        "to",
+        "up",
+        "yet",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +236,6 @@ class RuleEvaluator:
         """
         scope = rule.scope if rule.scope in _VALID_SCOPES else SCOPE_TEXT
 
-
         if scope in {SCOPE_TEXT, SCOPE_RAW}:
             return handler(rule, text, sentences)
         if scope == SCOPE_SENTENCE:
@@ -274,18 +292,20 @@ class RuleEvaluator:
             try:
                 for m in re.finditer(pattern, text, re.IGNORECASE):
                     line, col = _get_position(text, m.start())
-                    matches.append(RuleMatch(
-                        rule_id=rule.id,
-                        rule_type=rule.type,
-                        level=rule.level,
-                        message=msg,
-                        scope=rule.scope,
-                        matched_text=m.group(),
-                        line=line,
-                        col=col,
-                        action=action_name,
-                        replacement=replacement,
-                    ))
+                    matches.append(
+                        RuleMatch(
+                            rule_id=rule.id,
+                            rule_type=rule.type,
+                            level=rule.level,
+                            message=msg,
+                            scope=rule.scope,
+                            matched_text=m.group(),
+                            line=line,
+                            col=col,
+                            action=action_name,
+                            replacement=replacement,
+                        )
+                    )
             except re.error:
                 logger.warning("invalid_regex", rule_id=rule.id, pattern=pattern)
         return matches
@@ -323,18 +343,20 @@ class RuleEvaluator:
             for m in regex.finditer(text):
                 line, col = _get_position(text, m.start())
                 msg = rule.message or f"Use '{suggestion}' instead of '{m.group()}'"
-                matches.append(RuleMatch(
-                    rule_id=rule.id,
-                    rule_type=rule.type,
-                    level=rule.level,
-                    message=msg,
-                    scope=rule.scope,
-                    matched_text=m.group(),
-                    line=line,
-                    col=col,
-                    action=ACTION_REPLACE,
-                    replacement=suggestion,
-                ))
+                matches.append(
+                    RuleMatch(
+                        rule_id=rule.id,
+                        rule_type=rule.type,
+                        level=rule.level,
+                        message=msg,
+                        scope=rule.scope,
+                        matched_text=m.group(),
+                        line=line,
+                        col=col,
+                        action=ACTION_REPLACE,
+                        replacement=suggestion,
+                    )
+                )
         return matches
 
     def _eval_occurrence(
@@ -368,19 +390,19 @@ class RuleEvaluator:
             if len(found) > rule.max:
                 first = found[0]
                 line, col = _get_position(text, first.start())
-                msg = rule.message or (
-                    f"'{token}' occurs {len(found)} times (max {rule.max})"
+                msg = rule.message or (f"'{token}' occurs {len(found)} times (max {rule.max})")
+                matches.append(
+                    RuleMatch(
+                        rule_id=rule.id,
+                        rule_type=rule.type,
+                        level=rule.level,
+                        message=msg,
+                        scope=rule.scope,
+                        matched_text=first.group(),
+                        line=line,
+                        col=col,
+                    )
                 )
-                matches.append(RuleMatch(
-                    rule_id=rule.id,
-                    rule_type=rule.type,
-                    level=rule.level,
-                    message=msg,
-                    scope=rule.scope,
-                    matched_text=first.group(),
-                    line=line,
-                    col=col,
-                ))
         return matches
 
     def _eval_repetition(
@@ -418,16 +440,18 @@ class RuleEvaluator:
                         dup = all_matches[1]
                         line, col = _get_position(text, dup.start())
                         msg = rule.message or f"Repeated word: '{word}'"
-                        matches.append(RuleMatch(
-                            rule_id=rule.id,
-                            rule_type=rule.type,
-                            level=rule.level,
-                            message=msg,
-                            scope=rule.scope,
-                            matched_text=dup.group(),
-                            line=line,
-                            col=col,
-                        ))
+                        matches.append(
+                            RuleMatch(
+                                rule_id=rule.id,
+                                rule_type=rule.type,
+                                level=rule.level,
+                                message=msg,
+                                scope=rule.scope,
+                                matched_text=dup.group(),
+                                line=line,
+                                col=col,
+                            )
+                        )
                 except re.error:
                     pass
             seen[word] = i
@@ -477,21 +501,22 @@ class RuleEvaluator:
                 for m in flagged:
                     line, col = _get_position(text, m.start())
                     msg = rule.message or (
-                        f"Inconsistent usage: use '{preferred}' "
-                        f"instead of '{m.group()}'"
+                        f"Inconsistent usage: use '{preferred}' instead of '{m.group()}'"
                     )
-                    matches.append(RuleMatch(
-                        rule_id=rule.id,
-                        rule_type=rule.type,
-                        level=rule.level,
-                        message=msg,
-                        scope=rule.scope,
-                        matched_text=m.group(),
-                        line=line,
-                        col=col,
-                        action=ACTION_REPLACE,
-                        replacement=preferred,
-                    ))
+                    matches.append(
+                        RuleMatch(
+                            rule_id=rule.id,
+                            rule_type=rule.type,
+                            level=rule.level,
+                            message=msg,
+                            scope=rule.scope,
+                            matched_text=m.group(),
+                            line=line,
+                            col=col,
+                            action=ACTION_REPLACE,
+                            replacement=preferred,
+                        )
+                    )
         return matches
 
     def _eval_conditional(
@@ -536,19 +561,20 @@ class RuleEvaluator:
             for m in pattern.finditer(text):
                 line, col = _get_position(text, m.start())
                 msg = rule.message or (
-                    f"'{m.group()}' found but required term "
-                    f"'{rule.match}' is missing"
+                    f"'{m.group()}' found but required term '{rule.match}' is missing"
                 )
-                matches.append(RuleMatch(
-                    rule_id=rule.id,
-                    rule_type=rule.type,
-                    level=rule.level,
-                    message=msg,
-                    scope=rule.scope,
-                    matched_text=m.group(),
-                    line=line,
-                    col=col,
-                ))
+                matches.append(
+                    RuleMatch(
+                        rule_id=rule.id,
+                        rule_type=rule.type,
+                        level=rule.level,
+                        message=msg,
+                        scope=rule.scope,
+                        matched_text=m.group(),
+                        line=line,
+                        col=col,
+                    )
+                )
         return matches
 
     def _eval_capitalization(
@@ -591,16 +617,18 @@ class RuleEvaluator:
             return []
 
         msg = rule.message or f"Expected {expected} capitalization"
-        return [RuleMatch(
-            rule_id=rule.id,
-            rule_type=rule.type,
-            level=rule.level,
-            message=msg,
-            scope=rule.scope,
-            matched_text=text,
-            line=1,
-            col=1,
-        )]
+        return [
+            RuleMatch(
+                rule_id=rule.id,
+                rule_type=rule.type,
+                level=rule.level,
+                message=msg,
+                scope=rule.scope,
+                matched_text=text,
+                line=1,
+                col=1,
+            )
+        ]
 
     def _eval_metric(
         self,
@@ -658,22 +686,23 @@ class RuleEvaluator:
             return []
 
         msg = rule.message or (
-            f"Metric '{rule.metric}' = {value:.1f} "
-            f"(expected min={rule.min}, max={rule.max})"
+            f"Metric '{rule.metric}' = {value:.1f} (expected min={rule.min}, max={rule.max})"
         )
         truncated = text[:_METRIC_TRUNCATE_LEN]
         if len(text) > _METRIC_TRUNCATE_LEN:
             truncated += "..."
-        return [RuleMatch(
-            rule_id=rule.id,
-            rule_type=rule.type,
-            level=rule.level,
-            message=msg,
-            scope=rule.scope,
-            matched_text=truncated,
-            line=1,
-            col=1,
-        )]
+        return [
+            RuleMatch(
+                rule_id=rule.id,
+                rule_type=rule.type,
+                level=rule.level,
+                message=msg,
+                scope=rule.scope,
+                matched_text=truncated,
+                line=1,
+                col=1,
+            )
+        ]
 
     def _eval_sequence(
         self,
@@ -722,8 +751,7 @@ class RuleEvaluator:
             NotImplementedError: Always - script rules are excluded in v1.0.
         """
         raise NotImplementedError(
-            f"Script rules are excluded in v1.0 (rule '{rule.id}'). "
-            "See NFR-SEC-03.2."
+            f"Script rules are excluded in v1.0 (rule '{rule.id}'). See NFR-SEC-03.2."
         )
 
     # ------------------------------------------------------------------

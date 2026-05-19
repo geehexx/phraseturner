@@ -302,7 +302,11 @@ def aggregate_scores(  # noqa: PLR0913
         per-dimension breakdown including status indicators.
     """
     active_weights = _resolve_active_weights(
-        weights, focus, persona_weights, dimension_scores, has_semantic,
+        weights,
+        focus,
+        persona_weights,
+        dimension_scores,
+        has_semantic,
     )
 
     composite = 0.0

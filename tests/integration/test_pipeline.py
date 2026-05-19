@@ -175,9 +175,7 @@ class TestAnalyzeWithPersona:
         assert 1 <= len(ns) <= 3
 
     @pytest.mark.asyncio
-    async def test_analyze_without_persona_has_no_alignment(
-        self, ctx: MagicMock
-    ) -> None:
+    async def test_analyze_without_persona_has_no_alignment(self, ctx: MagicMock) -> None:
         """Without persona, persona_alignment should be None."""
         result = await analyze(
             text="Hello world. This is a simple test.",
@@ -421,9 +419,7 @@ class TestDegradation:
         assert meta["operating_tier"] >= 0
 
     @pytest.mark.asyncio
-    async def test_degraded_still_has_valid_health_score(
-        self, ctx: MagicMock
-    ) -> None:
+    async def test_degraded_still_has_valid_health_score(self, ctx: MagicMock) -> None:
         """Even degraded, health_score and sentences should be valid."""
         result = await analyze(
             text="Hello world. This is a test. Another sentence here.",

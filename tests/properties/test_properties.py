@@ -58,10 +58,12 @@ from phraseturner.pipeline.vocabulary import _compute_ttr
 # in property tests that use spaCy (P-rt-01, P-inv-01, P-inv-08, P-meta-01).
 # ---------------------------------------------------------------------------
 
+
 def _load_nlp() -> object:
     """Load spaCy model once at module level."""
     try:
         import spacy
+
         return spacy.load("en_core_web_sm")
     except Exception:
         return None
@@ -74,16 +76,79 @@ _NLP = _load_nlp()
 # ---------------------------------------------------------------------------
 
 _WORD_POOL = [
-    "the", "quick", "brown", "fox", "jumps", "over", "lazy", "dog",
-    "a", "big", "red", "car", "drives", "down", "long", "road",
-    "she", "writes", "beautiful", "stories", "about", "ancient", "cities",
-    "they", "build", "modern", "bridges", "across", "wide", "rivers",
-    "he", "reads", "interesting", "books", "every", "single", "day",
-    "we", "explore", "new", "ideas", "together", "with", "great", "care",
-    "small", "children", "play", "happily", "in", "sunny", "parks",
-    "old", "trees", "grow", "tall", "near", "quiet", "lakes",
-    "bright", "stars", "shine", "above", "dark", "mountains", "tonight",
-    "fast", "trains", "travel", "between", "busy", "stations", "daily",
+    "the",
+    "quick",
+    "brown",
+    "fox",
+    "jumps",
+    "over",
+    "lazy",
+    "dog",
+    "a",
+    "big",
+    "red",
+    "car",
+    "drives",
+    "down",
+    "long",
+    "road",
+    "she",
+    "writes",
+    "beautiful",
+    "stories",
+    "about",
+    "ancient",
+    "cities",
+    "they",
+    "build",
+    "modern",
+    "bridges",
+    "across",
+    "wide",
+    "rivers",
+    "he",
+    "reads",
+    "interesting",
+    "books",
+    "every",
+    "single",
+    "day",
+    "we",
+    "explore",
+    "new",
+    "ideas",
+    "together",
+    "with",
+    "great",
+    "care",
+    "small",
+    "children",
+    "play",
+    "happily",
+    "in",
+    "sunny",
+    "parks",
+    "old",
+    "trees",
+    "grow",
+    "tall",
+    "near",
+    "quiet",
+    "lakes",
+    "bright",
+    "stars",
+    "shine",
+    "above",
+    "dark",
+    "mountains",
+    "tonight",
+    "fast",
+    "trains",
+    "travel",
+    "between",
+    "busy",
+    "stations",
+    "daily",
 ]
 
 
@@ -152,10 +217,7 @@ def health_score_weights_strategy(draw: st.DrawFn) -> HealthScoreWeights:
 @st.composite
 def dimension_scores_strategy(draw: st.DrawFn) -> dict[str, float]:
     """Generate per-dimension scores in [0, 100]."""
-    return {
-        dim: draw(st.floats(min_value=0.0, max_value=100.0))
-        for dim in DIMENSIONS
-    }
+    return {dim: draw(st.floats(min_value=0.0, max_value=100.0)) for dim in DIMENSIONS}
 
 
 # ---------------------------------------------------------------------------
@@ -271,8 +333,7 @@ class TestInvariant:
         Uses the built-in personas directory to verify count consistency.
         """
         builtin_dir = (
-            Path(__file__).resolve().parent.parent.parent
-            / "src" / "phraseturner" / "personas"
+            Path(__file__).resolve().parent.parent.parent / "src" / "phraseturner" / "personas"
         )
         yaml_files = list(builtin_dir.glob("*.yaml")) + list(builtin_dir.glob("*.yml"))
         valid_count = 0
@@ -285,10 +346,7 @@ class TestInvariant:
                 pass
         # At least the built-in personas should exist
         assert valid_count >= 1
-        assert valid_count == len([
-            yf for yf in yaml_files
-            if _is_valid_persona_yaml(yf)
-        ])
+        assert valid_count == len([yf for yf in yaml_files if _is_valid_persona_yaml(yf)])
 
     @given(persona=persona_config_strategy())
     @settings(max_examples=100)
@@ -314,9 +372,7 @@ class TestInvariant:
         """
         result = aggregate_scores(scores, has_semantic=True)
         # Manually compute expected weighted sum
-        expected = sum(
-            scores[dim] * DEFAULT_WEIGHTS[dim] for dim in DIMENSIONS
-        )
+        expected = sum(scores[dim] * DEFAULT_WEIGHTS[dim] for dim in DIMENSIONS)
         expected = round(min(max(expected, 0.0), 100.0), 1)
         assert abs(result.composite_score - expected) < 0.2
 
@@ -346,7 +402,10 @@ class TestInvariant:
     )
     @settings(max_examples=100)
     def test_p_inv_06_tier_precedence(
-        self, name: str, tier1_formality: float, tier2_formality: float,
+        self,
+        name: str,
+        tier1_formality: float,
+        tier2_formality: float,
     ) -> None:
         """P-inv-06: Higher-tier persona wins.
 
@@ -356,16 +415,18 @@ class TestInvariant:
         the higher-tier version should take precedence.
         """
         tier1 = PersonaConfig(
-            name=name, version="1.0.0",
+            name=name,
+            version="1.0.0",
             tone=ToneConfig(formality=tier1_formality),
         )
         tier2 = PersonaConfig(
-            name=name, version="1.0.0",
+            name=name,
+            version="1.0.0",
             tone=ToneConfig(formality=tier2_formality),
         )
         # Simulate tier resolution: tier1 (project) > tier2 (user)
         personas = {name: tier2}  # Lower tier loaded first
-        personas[name] = tier1    # Higher tier overwrites
+        personas[name] = tier1  # Higher tier overwrites
         assert personas[name].tone.formality == tier1_formality
 
     def test_p_inv_07_no_circular_pipeline_deps(self) -> None:
@@ -391,9 +452,7 @@ class TestInvariant:
             for dep in deps[stage]:
                 assert dep < stage, f"Stage {stage} depends on later stage {dep}"
                 # Verify no reverse dependency
-                assert stage not in deps[dep], (
-                    f"Circular dependency: {stage} <-> {dep}"
-                )
+                assert stage not in deps[dep], f"Circular dependency: {stage} <-> {dep}"
 
     @given(text=multi_sentence_text(min_sentences=2, max_sentences=4))
     @settings(max_examples=100, deadline=None)
@@ -410,7 +469,8 @@ class TestInvariant:
     @given(
         lengths=st.lists(
             st.integers(min_value=0, max_value=50),
-            min_size=1, max_size=20,
+            min_size=1,
+            max_size=20,
         ),
     )
     @settings(max_examples=100)
@@ -435,11 +495,7 @@ class TestInvariant:
         # TTR is 0.0 when no alphabetic words, otherwise in (0.0, 1.0]
         assert 0.0 <= ttr <= 1.0
         # If there are alphabetic words, TTR should be > 0
-        has_alpha = any(
-            w.isalpha()
-            for s in sentences
-            for w in s.split()
-        )
+        has_alpha = any(w.isalpha() for s in sentences for w in s.split())
         if has_alpha:
             assert ttr > 0.0
 
@@ -507,18 +563,26 @@ class TestInvariant:
         use imperative verbs like "Shorten", "Replace", "Remove".
         """
         directive_starters = (
-            "Shorten", "Expand", "Replace", "Remove", "Add",
-            "Improve", "Vary", "Review", "Use",
+            "Shorten",
+            "Expand",
+            "Replace",
+            "Remove",
+            "Add",
+            "Improve",
+            "Vary",
+            "Review",
+            "Use",
         )
         for code, hint in _HINT_MAP.items():
             # Hints should start with a directive verb
-            assert any(
-                hint.startswith(verb) for verb in directive_starters
-            ), f"Hint for {code} does not start with a directive: {hint!r}"
+            assert any(hint.startswith(verb) for verb in directive_starters), (
+                f"Hint for {code} does not start with a directive: {hint!r}"
+            )
             # Hints should not contain quoted replacement text
             # (a rewrite would look like: 'Change to "the quick fox"')
             assert not re.search(
-                r'"[A-Z][^"]{10,}"', hint,
+                r'"[A-Z][^"]{10,}"',
+                hint,
             ), f"Hint for {code} may contain a rewrite: {hint!r}"
 
 
@@ -602,7 +666,9 @@ class TestMetamorphic:
     )
     @settings(max_examples=100)
     def test_p_meta_03_uniform_lengths_lower_burstiness(
-        self, n_sentences: int, word_count: int,
+        self,
+        n_sentences: int,
+        word_count: int,
     ) -> None:
         """P-meta-03: Uniform lengths -> lower burstiness.
 
@@ -680,7 +746,7 @@ class TestIdempotence:
             if persona_file.exists():
                 with pytest.raises(PersonaExistsError):
                     raise PersonaExistsError(
-                        f"Persona \'{persona.name}\' already exists",
+                        f"Persona '{persona.name}' already exists",
                     )
 
     @given(scores=dimension_scores_strategy())

@@ -116,11 +116,13 @@ def _build_sentence_alignment(
     alignment: list[SentenceAlignment] = []
     for idx in range(len(orig_sents)):
         rewr_idx = [idx] if idx < len(rewr_sents) else []
-        alignment.append(SentenceAlignment(
-            original_index=idx,
-            rewritten_indices=rewr_idx,
-            similarity=semantic_sim,
-        ))
+        alignment.append(
+            SentenceAlignment(
+                original_index=idx,
+                rewritten_indices=rewr_idx,
+                similarity=semantic_sim,
+            )
+        )
     return alignment
 
 
@@ -130,12 +132,10 @@ def _compute_persona_delta(
 ) -> DimensionDelta | None:
     """Compute persona compliance delta between original and rewritten text."""
     orig_comp = (
-        result_orig.persona_alignment.overall_compliance
-        if result_orig.persona_alignment else 0.0
+        result_orig.persona_alignment.overall_compliance if result_orig.persona_alignment else 0.0
     )
     rewr_comp = (
-        result_rewr.persona_alignment.overall_compliance
-        if result_rewr.persona_alignment else 0.0
+        result_rewr.persona_alignment.overall_compliance if result_rewr.persona_alignment else 0.0
     )
     return DimensionDelta(
         original=orig_comp,
@@ -154,10 +154,7 @@ def _build_comparison_metadata(
     return AnalysisMetadata(
         model_versions=result_rewr.metadata.model_versions,
         latency_ms=round(latency_ms, 1),
-        token_count=(
-            result_orig.metadata.token_count
-            + result_rewr.metadata.token_count
-        ),
+        token_count=(result_orig.metadata.token_count + result_rewr.metadata.token_count),
         operating_tier=result_rewr.metadata.operating_tier,
         t5_available=result_rewr.metadata.t5_available,
     )
@@ -297,21 +294,14 @@ async def analyze(  # noqa: PLR0913
     fmt = ResponseFormat(response_format)
     if fmt == ResponseFormat.CONCISE:
         flags_summary = FlagsSummary(
-            error_count=sum(
-                1 for s in result.sentences for f in s.flags
-                if f.severity == "error"
-            ),
+            error_count=sum(1 for s in result.sentences for f in s.flags if f.severity == "error"),
             warning_count=sum(
-                1 for s in result.sentences for f in s.flags
-                if f.severity == "warning"
+                1 for s in result.sentences for f in s.flags if f.severity == "warning"
             ),
             suggestion_count=sum(
-                1 for s in result.sentences for f in s.flags
-                if f.severity == "suggestion"
+                1 for s in result.sentences for f in s.flags if f.severity == "suggestion"
             ),
-            top_flags=[
-                f.code for s in result.sentences for f in s.flags
-            ][:5],
+            top_flags=[f.code for s in result.sentences for f in s.flags][:5],
         )
         concise = ConciseAnalysisResult(
             health_score=result.health_score,
@@ -447,8 +437,7 @@ async def compare(
 
     delta_map = _compute_dimension_deltas(result_orig, result_rewr)
     overall_improvement = (
-        result_rewr.health_score.composite_score
-        - result_orig.health_score.composite_score
+        result_rewr.health_score.composite_score - result_orig.health_score.composite_score
     )
 
     models = lctx["models"]
@@ -628,19 +617,12 @@ async def get_persona(
         version=config.version,
         description=config.description,
         tone=config.tone.model_dump(),
-        brand_voice=(
-            config.brand_voice.model_dump()
-            if config.brand_voice else None
-        ),
+        brand_voice=(config.brand_voice.model_dump() if config.brand_voice else None),
         vocabulary=config.vocabulary.model_dump(),
         rules=[r.model_dump() for r in config.rules],
-        channel_overrides={
-            k.value: v.model_dump()
-            for k, v in config.channel_overrides.items()
-        },
+        channel_overrides={k.value: v.model_dump() for k, v in config.channel_overrides.items()},
         health_score_weights=(
-            config.health_score_weights.model_dump()
-            if config.health_score_weights else None
+            config.health_score_weights.model_dump() if config.health_score_weights else None
         ),
         tier=tier,
     )

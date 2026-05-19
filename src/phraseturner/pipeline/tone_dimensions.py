@@ -28,39 +28,101 @@ _FORMAL_POS: frozenset[str] = frozenset({"NOUN", "ADJ", "ADP", "DET"})
 _INFORMAL_POS: frozenset[str] = frozenset({"PRON", "VERB", "ADV", "INTJ"})
 """POS tags that decrease formality in the F-score formula."""
 
-_PERSONAL_PRONOUNS: frozenset[str] = frozenset({
-    "i", "me", "my", "mine", "myself",
-    "you", "your", "yours", "yourself",
-    "we", "us", "our", "ours", "ourselves",
-})
+_PERSONAL_PRONOUNS: frozenset[str] = frozenset(
+    {
+        "i",
+        "me",
+        "my",
+        "mine",
+        "myself",
+        "you",
+        "your",
+        "yours",
+        "yourself",
+        "we",
+        "us",
+        "our",
+        "ours",
+        "ourselves",
+    }
+)
 """First and second person pronouns for personal pronoun density."""
 
 _EXCLAMATION_CHARS: frozenset[str] = frozenset({"!", "?"})
 """Characters used to detect exclamatory/interrogative sentences."""
 
-_FILLER_WORDS: frozenset[str] = frozenset({
-    "basically", "literally", "actually", "honestly", "obviously",
-    "clearly", "simply", "just", "really", "very", "quite",
-    "pretty", "rather", "somewhat", "kind of", "sort of",
-})
+_FILLER_WORDS: frozenset[str] = frozenset(
+    {
+        "basically",
+        "literally",
+        "actually",
+        "honestly",
+        "obviously",
+        "clearly",
+        "simply",
+        "just",
+        "really",
+        "very",
+        "quite",
+        "pretty",
+        "rather",
+        "somewhat",
+        "kind of",
+        "sort of",
+    }
+)
 """Common filler words that inflate verbosity without adding information."""
 
-_MODAL_VERBS: frozenset[str] = frozenset({
-    "can", "could", "may", "might", "must", "shall", "should",
-    "will", "would", "ought",
-})
+_MODAL_VERBS: frozenset[str] = frozenset(
+    {
+        "can",
+        "could",
+        "may",
+        "might",
+        "must",
+        "shall",
+        "should",
+        "will",
+        "would",
+        "ought",
+    }
+)
 """Modal verbs that reduce confidence when overused."""
 
-_INCLUSIVE_PRONOUNS: frozenset[str] = frozenset({
-    "we", "us", "our", "ours", "ourselves",
-})
+_INCLUSIVE_PRONOUNS: frozenset[str] = frozenset(
+    {
+        "we",
+        "us",
+        "our",
+        "ours",
+        "ourselves",
+    }
+)
 """Inclusive pronouns that increase warmth."""
 
-_IMPERATIVE_STARTERS: frozenset[str] = frozenset({
-    "do", "don't", "please", "make", "ensure", "check", "use",
-    "add", "remove", "update", "create", "run", "set", "get",
-    "note", "remember", "consider", "avoid", "keep",
-})
+_IMPERATIVE_STARTERS: frozenset[str] = frozenset(
+    {
+        "do",
+        "don't",
+        "please",
+        "make",
+        "ensure",
+        "check",
+        "use",
+        "add",
+        "remove",
+        "update",
+        "create",
+        "run",
+        "set",
+        "get",
+        "note",
+        "remember",
+        "consider",
+        "avoid",
+        "keep",
+    }
+)
 """Common imperative sentence starters for directness scoring."""
 
 
@@ -225,7 +287,8 @@ def _compute_sentence_ratios(
     inclusive_pronoun_density = inclusive_count / max(total_words, 1)
 
     imperative_count = sum(
-        1 for s in sentences
+        1
+        for s in sentences
         if s.split() and _strip_punct(s.split()[0].lower()) in _IMPERATIVE_STARTERS
     )
     imperative_ratio = imperative_count / max(n_sentences, 1)
@@ -243,9 +306,13 @@ def _compute_sentence_ratios(
     filler_density = filler_count / max(total_words, 1)
 
     return (
-        exclamation_density, inclusive_pronoun_density,
-        imperative_ratio, question_ratio,
-        burstiness, length_variation, filler_density,
+        exclamation_density,
+        inclusive_pronoun_density,
+        imperative_ratio,
+        question_ratio,
+        burstiness,
+        length_variation,
+        filler_density,
     )
 
 
@@ -275,11 +342,18 @@ def _compute_derived_signals(  # noqa: PLR0913
     stripped_words = [_strip_punct(w) for w in text.lower().split()]
 
     hedge_d, info_d, modal_d, assert_r, passive_r = _compute_text_densities(
-        additional, total_words, n_sentences, stripped_words, doc,
+        additional,
+        total_words,
+        n_sentences,
+        stripped_words,
+        doc,
     )
-    (excl_d, incl_d, imper_r, quest_r,
-     burst, len_var, filler_d) = _compute_sentence_ratios(
-        sentences, stripped_words, total_words, n_sentences, naturalness,
+    (excl_d, incl_d, imper_r, quest_r, burst, len_var, filler_d) = _compute_sentence_ratios(
+        sentences,
+        stripped_words,
+        total_words,
+        n_sentences,
+        naturalness,
     )
 
     return _DerivedSignals(
@@ -400,7 +474,9 @@ def compute_tone_dimensions(  # noqa: PLR0913
 
     return {
         "formality": compute_formality_score(
-            doc, tone.contraction_density, tone.formal_marker_count,
+            doc,
+            tone.contraction_density,
+            tone.formal_marker_count,
         ),
         "confidence": _score_confidence(sig, compound),
         "warmth": _score_warmth(sig, compound, tone.overall_sentiment.negative),
