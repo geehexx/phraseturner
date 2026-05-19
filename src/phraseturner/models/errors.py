@@ -26,9 +26,7 @@ class ToolError(BaseModel):
 
     code: str = Field(description="Machine-readable error code.")
     message: str = Field(description="Human-readable error description.")
-    details: dict[str, Any] | None = Field(
-        default=None, description="Additional context."
-    )
+    details: dict[str, Any] | None = Field(default=None, description="Additional context.")
 
 
 class AnalysisError(BaseModel):

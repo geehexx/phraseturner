@@ -60,10 +60,7 @@ def _compute_grades(text: str) -> dict[str, float]:
     Returns:
         Mapping of formula name to grade value.
     """
-    return {
-        name: float(getattr(textstat, name)(text))
-        for name in _FORMULA_NAMES
-    }
+    return {name: float(getattr(textstat, name)(text)) for name in _FORMULA_NAMES}
 
 
 def _consensus(grades: dict[str, float]) -> float:
@@ -113,9 +110,7 @@ def analyze_readability(
     flesch_reading_ease = float(textstat.flesch_reading_ease(full_text))
 
     # Per-sentence consensus grades
-    per_sentence_grades = [
-        _consensus(_compute_grades(sentence)) for sentence in sentences
-    ]
+    per_sentence_grades = [_consensus(_compute_grades(sentence)) for sentence in sentences]
 
     return ReadabilityResult(
         consensus_grade=consensus_grade,

@@ -56,30 +56,21 @@ class NextStepsBuilder:
         grade = result.health_score.letter_grade
 
         if grade in ("D", "F"):
-            steps.append(
-                "Rewrite the flagged sentences, then call `score` "
-                "to verify improvement"
-            )
+            steps.append("Rewrite the flagged sentences, then call `score` to verify improvement")
 
         if (
             persona
             and result.persona_alignment is not None
             and result.persona_alignment.overall_compliance < _COMPLIANCE_THRESHOLD
         ):
-            steps.append(
-                f"Call `get_persona {persona}` to review tone targets"
-            )
+            steps.append(f"Call `get_persona {persona}` to review tone targets")
 
         nat_dim = result.health_score.dimensions.get("naturalness")
         if nat_dim is not None and nat_dim.status == "poor":
-            steps.append(
-                "Vary sentence length and structure to improve naturalness"
-            )
+            steps.append("Vary sentence length and structure to improve naturalness")
 
         if not steps:
-            steps.append(
-                "Text quality is good — no immediate action needed"
-            )
+            steps.append("Text quality is good — no immediate action needed")
 
         return steps[:_MAX_STEPS]
 
@@ -100,26 +91,20 @@ class NextStepsBuilder:
 
         if result.overall_improvement < 0:
             steps.append(
-                "Rewrite regressed — review the original text's "
-                "strengths before rewriting further"
+                "Rewrite regressed — review the original text's strengths before rewriting further"
             )
 
         if result.semantic_similarity < _SIMILARITY_THRESHOLD:
             steps.append(
-                "Meaning drift detected — rewrite more conservatively "
-                "to preserve core meaning"
+                "Meaning drift detected — rewrite more conservatively to preserve core meaning"
             )
 
         if result.overall_improvement > _IMPROVEMENT_THRESHOLD:
-            steps.append(
-                "Strong improvement — call `score` on the final "
-                "version to confirm"
-            )
+            steps.append("Strong improvement — call `score` on the final version to confirm")
 
         if not steps:
             steps.append(
-                "Moderate improvement — consider another iteration "
-                "targeting the weakest dimension"
+                "Moderate improvement — consider another iteration targeting the weakest dimension"
             )
 
         return steps[:_MAX_STEPS]
@@ -141,15 +126,10 @@ class NextStepsBuilder:
 
         if score.letter_grade in ("D", "F"):
             steps.append(
-                "Call `analyze` with `include_suggestions=true` "
-                "to identify specific issues"
+                "Call `analyze` with `include_suggestions=true` to identify specific issues"
             )
         elif score.letter_grade in ("B", "C"):
-            scored_dims = [
-                (k, v)
-                for k, v in score.dimensions.items()
-                if v is not None
-            ]
+            scored_dims = [(k, v) for k, v in score.dimensions.items() if v is not None]
             if scored_dims:
                 worst = min(scored_dims, key=lambda x: x[1].score)
                 steps.append(
@@ -176,9 +156,7 @@ class NextStepsBuilder:
             1-3 contextual suggestion strings.
         """
         if count == 0:
-            return [
-                "No personas found — call `create_persona` to define one"
-            ]
+            return ["No personas found — call `create_persona` to define one"]
         return [
             "Call `get_persona <name>` to view full details of a persona",
             "Call `analyze` with a persona name to analyse text against it",
@@ -194,10 +172,8 @@ class NextStepsBuilder:
             1-3 contextual suggestion strings.
         """
         return [
-            f"Call `analyze` with `persona=\"{name}\"` to analyse "
-            "text against this persona",
-            "Call `validate_persona` to check a modified version "
-            "before saving",
+            f'Call `analyze` with `persona="{name}"` to analyse text against this persona',
+            "Call `validate_persona` to check a modified version before saving",
         ]
 
     def for_create_persona(self, name: str) -> list[str]:
@@ -210,8 +186,7 @@ class NextStepsBuilder:
             1-3 contextual suggestion strings.
         """
         return [
-            f"Call `analyze` with `persona=\"{name}\"` to test "
-            "the new persona",
+            f'Call `analyze` with `persona="{name}"` to test the new persona',
             f"Call `get_persona {name}` to verify the full definition",
         ]
 
@@ -225,12 +200,8 @@ class NextStepsBuilder:
             1-3 contextual suggestion strings.
         """
         if valid:
-            return [
-                "Validation passed — call `create_persona` to save it"
-            ]
-        return [
-            "Fix the reported errors and call `validate_persona` again"
-        ]
+            return ["Validation passed — call `create_persona` to save it"]
+        return ["Fix the reported errors and call `validate_persona` again"]
 
     # ------------------------------------------------------------------
     # error recovery
@@ -246,20 +217,14 @@ class NextStepsBuilder:
             1-3 recovery suggestion strings.
         """
         catalog: dict[str, list[str]] = {
-            "TEXT_TOO_LONG": [
-                "Reduce text to under 8000 tokens, or split into "
-                "smaller chunks"
-            ],
-            "TEXT_TOO_SHORT": [
-                "Provide at least one complete sentence for analysis"
-            ],
+            "TEXT_TOO_LONG": ["Reduce text to under 8000 tokens, or split into smaller chunks"],
+            "TEXT_TOO_SHORT": ["Provide at least one complete sentence for analysis"],
             "PERSONA_NOT_FOUND": [
                 "Call `list_personas` to see available personas",
                 "Check spelling of the persona name",
             ],
             "PERSONA_EXISTS": [
-                "Use a different persona name, or delete the existing "
-                "persona first"
+                "Use a different persona name, or delete the existing persona first"
             ],
             "PERSONA_VALIDATION_FAILED": [
                 "Call `validate_persona` to see specific validation errors"

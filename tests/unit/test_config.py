@@ -83,14 +83,17 @@ class TestServerConfigEnvOverrides:
         assert cfg.log_level == "DEBUG"
 
     def test_personas_dir_env(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
     ) -> None:
         monkeypatch.setenv("PHRASETURNER_PERSONAS_DIR", str(tmp_path))
         cfg = ServerConfig()
         assert cfg.personas_dir == tmp_path
 
     def test_watch_debounce_ms_env(
-        self, monkeypatch: pytest.MonkeyPatch,
+        self,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("PHRASETURNER_WATCH_DEBOUNCE_MS", "1000")
         cfg = ServerConfig()
@@ -119,7 +122,8 @@ class TestGetConfigLruCache:
         assert first is not second
 
     def test_env_override_after_cache_clear(
-        self, monkeypatch: pytest.MonkeyPatch,
+        self,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         get_config.cache_clear()
         monkeypatch.setenv("PHRASETURNER_LOG_LEVEL", "WARNING")

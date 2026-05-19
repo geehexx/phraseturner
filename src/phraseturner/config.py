@@ -29,7 +29,7 @@ class ServerConfig(BaseSettings):
     personas_dir: Path | None = None
 
     # Model toggles
-    disable_t5: bool = False        # FR-T5-01.4
+    disable_t5: bool = False  # FR-T5-01.4
     disable_slop: bool = False
     disable_embed: bool = False
 
@@ -39,7 +39,7 @@ class ServerConfig(BaseSettings):
     spacy_model: str = "en_core_web_sm"
 
     # Analysis limits
-    max_tokens: int = 8_000         # FR-TOOL-01.7
+    max_tokens: int = 8_000  # FR-TOOL-01.7
     max_sentences_t5: int = 20
 
     # Hot-reload — FR-PERSONA-04.2

@@ -267,18 +267,26 @@ class TestGatingContext:
 
     def test_equality(self) -> None:
         a = GatingContext(
-            ai_signal="likely-ai", include_suggestions=True, has_persona=False,
+            ai_signal="likely-ai",
+            include_suggestions=True,
+            has_persona=False,
         )
         b = GatingContext(
-            ai_signal="likely-ai", include_suggestions=True, has_persona=False,
+            ai_signal="likely-ai",
+            include_suggestions=True,
+            has_persona=False,
         )
         assert a == b
 
     def test_inequality(self) -> None:
         a = GatingContext(
-            ai_signal="likely-ai", include_suggestions=True, has_persona=False,
+            ai_signal="likely-ai",
+            include_suggestions=True,
+            has_persona=False,
         )
         b = GatingContext(
-            ai_signal="likely-human", include_suggestions=True, has_persona=False,
+            ai_signal="likely-human",
+            include_suggestions=True,
+            has_persona=False,
         )
         assert a != b

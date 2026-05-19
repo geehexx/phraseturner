@@ -26,16 +26,61 @@ _VADER: SentimentIntensityAnalyzer = SentimentIntensityAnalyzer()
 # Contraction patterns
 # ---------------------------------------------------------------------------
 
-_CONTRACTIONS: frozenset[str] = frozenset({
-    "don't", "can't", "won't", "i'm", "you're", "they're", "it's",
-    "we're", "he's", "she's", "that's", "there's", "who's", "what's",
-    "where's", "how's", "isn't", "aren't", "wasn't", "weren't",
-    "hasn't", "haven't", "hadn't", "doesn't", "didn't", "couldn't",
-    "wouldn't", "shouldn't", "i've", "you've", "we've", "they've",
-    "i'll", "you'll", "he'll", "she'll", "we'll", "they'll", "it'll",
-    "i'd", "you'd", "he'd", "she'd", "we'd", "they'd", "let's",
-    "ain't", "mustn't", "shan't", "needn't", "mightn't",
-})
+_CONTRACTIONS: frozenset[str] = frozenset(
+    {
+        "don't",
+        "can't",
+        "won't",
+        "i'm",
+        "you're",
+        "they're",
+        "it's",
+        "we're",
+        "he's",
+        "she's",
+        "that's",
+        "there's",
+        "who's",
+        "what's",
+        "where's",
+        "how's",
+        "isn't",
+        "aren't",
+        "wasn't",
+        "weren't",
+        "hasn't",
+        "haven't",
+        "hadn't",
+        "doesn't",
+        "didn't",
+        "couldn't",
+        "wouldn't",
+        "shouldn't",
+        "i've",
+        "you've",
+        "we've",
+        "they've",
+        "i'll",
+        "you'll",
+        "he'll",
+        "she'll",
+        "we'll",
+        "they'll",
+        "it'll",
+        "i'd",
+        "you'd",
+        "he'd",
+        "she'd",
+        "we'd",
+        "they'd",
+        "let's",
+        "ain't",
+        "mustn't",
+        "shan't",
+        "needn't",
+        "mightn't",
+    }
+)
 """Common English contractions (lowercased). FR-PIPELINE-06."""
 
 # ---------------------------------------------------------------------------
@@ -59,7 +104,13 @@ _LATIN_ABBREVIATIONS: tuple[re.Pattern[str], ...] = (
 """Compiled regex patterns for Latin abbreviations."""
 
 _NOMINALIZATION_SUFFIXES: tuple[str, ...] = (
-    "tion", "sion", "ment", "ness", "ity", "ance", "ence",
+    "tion",
+    "sion",
+    "ment",
+    "ness",
+    "ity",
+    "ance",
+    "ence",
 )
 """Common nominalization suffixes for formal marker detection."""
 

@@ -157,9 +157,7 @@ def _run_stylometric_fallback(
     else:
         classification = "uncertain"
 
-    ai_probability = _estimate_stylometric_probability(
-        burstiness, hapax_ratio, zipf_r_squared
-    )
+    ai_probability = _estimate_stylometric_probability(burstiness, hapax_ratio, zipf_r_squared)
 
     return AIDetectionResult(
         classification=classification,

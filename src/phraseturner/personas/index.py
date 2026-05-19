@@ -62,10 +62,7 @@ def get_persona_directories(config: ServerConfig) -> list[tuple[Path, str]]:
 
     # Tier 2: User-level (configurable via PHRASETURNER_PERSONAS_DIR)
     # AC-FR-PERSONA-09.1, AC-FR-PERSONA-09.2
-    user_dir = (
-        config.personas_dir
-        or Path("~/.config/phraseturner/personas").expanduser()
-    )
+    user_dir = config.personas_dir or Path("~/.config/phraseturner/personas").expanduser()
     user_dir.mkdir(parents=True, exist_ok=True)  # AC-FR-PERSONA-09.2
     dirs.append((user_dir, TIER_USER))
 
@@ -158,9 +155,7 @@ class PersonaIndex:
                 continue
 
             yaml_files = sorted(
-                p
-                for p in directory.iterdir()
-                if p.suffix in {".yaml", ".yml"} and p.is_file()
+                p for p in directory.iterdir() if p.suffix in {".yaml", ".yml"} and p.is_file()
             )
 
             for yaml_path in yaml_files:
@@ -192,9 +187,7 @@ class PersonaIndex:
             "persona_index_loaded",
             total=len(self._personas),
             tiers={
-                tier: sum(
-                    1 for _, t in self._personas.values() if t == tier
-                )
+                tier: sum(1 for _, t in self._personas.values() if t == tier)
                 for tier in _TIER_LABELS
             },
         )
@@ -320,11 +313,7 @@ class PersonaIndex:
         import watchfiles  # noqa: PLC0415
 
         directories = get_persona_directories(self._config)
-        watch_paths = [
-            str(directory)
-            for directory, _ in directories
-            if directory.is_dir()
-        ]
+        watch_paths = [str(directory) for directory, _ in directories if directory.is_dir()]
 
         if not watch_paths:
             logger.warning("persona_watch_no_dirs", msg="No persona directories to watch")

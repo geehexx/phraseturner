@@ -227,6 +227,7 @@ class TestLoaderFastembedSuccess:
     async def test_load_fastembed_success(self) -> None:
         """load_fastembed stores the model when loading succeeds."""
         from unittest.mock import MagicMock, patch
+
         config = ServerConfig(disable_embed=False, disable_t5=True, disable_slop=True)
         loader = ModelLoader(config)
         mock_model = MagicMock()
@@ -238,6 +239,7 @@ class TestLoaderFastembedSuccess:
     async def test_load_fastembed_failure_graceful(self) -> None:
         """load_fastembed logs warning on failure, does not raise."""
         from unittest.mock import patch
+
         config = ServerConfig(disable_embed=False, disable_t5=True, disable_slop=True)
         loader = ModelLoader(config)
         with patch(
@@ -254,6 +256,7 @@ class TestLoaderSlopSuccess:
     async def test_load_slop_detector_success(self) -> None:
         """load_slop_detector stores the wrapper when loading succeeds."""
         from unittest.mock import MagicMock, patch
+
         config = ServerConfig(disable_slop=False, disable_t5=True, disable_embed=True)
         loader = ModelLoader(config)
         mock_wrapper = MagicMock()
@@ -265,6 +268,7 @@ class TestLoaderSlopSuccess:
     async def test_load_slop_detector_failure_graceful(self) -> None:
         """load_slop_detector logs warning on failure, does not raise."""
         from unittest.mock import patch
+
         config = ServerConfig(disable_slop=False, disable_t5=True, disable_embed=True)
         loader = ModelLoader(config)
         with patch(
@@ -281,6 +285,7 @@ class TestLoaderT5:
     async def test_load_t5_success(self) -> None:
         """load_t5 stores session and tokenizer when loading succeeds."""
         from unittest.mock import MagicMock, patch
+
         config = ServerConfig(disable_t5=False, disable_slop=True, disable_embed=True)
         loader = ModelLoader(config)
         mock_sessions = (MagicMock(), MagicMock())
@@ -297,6 +302,7 @@ class TestLoaderT5:
     async def test_load_t5_failure_graceful(self) -> None:
         """load_t5 logs warning on failure, does not raise."""
         from unittest.mock import patch
+
         config = ServerConfig(disable_t5=False, disable_slop=True, disable_embed=True)
         loader = ModelLoader(config)
         with patch(
@@ -313,6 +319,7 @@ class TestLoaderWarmupSuccess:
     async def test_warmup_t5_success(self) -> None:
         """warmup_t5 completes without error when T5 is available."""
         from unittest.mock import MagicMock, patch
+
         config = ServerConfig(disable_t5=True, disable_slop=True, disable_embed=True)
         loader = ModelLoader(config)
         loader._t5_session = (MagicMock(), MagicMock())

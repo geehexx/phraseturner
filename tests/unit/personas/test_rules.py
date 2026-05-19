@@ -61,8 +61,11 @@ class TestHelpers:
 class TestExistence:
     def test_token_match(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-very", type=RuleType.EXISTENCE, level=RuleLevel.WARNING,
-            message="Avoid 'very'", tokens=["very"],
+            id="no-very",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.WARNING,
+            message="Avoid 'very'",
+            tokens=["very"],
         )
         matches = evaluator.evaluate(rule, "This is very important.", ["This is very important."])
         assert len(matches) == 1
@@ -71,8 +74,11 @@ class TestExistence:
 
     def test_raw_regex_match(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="memory-uri", type=RuleType.EXISTENCE, level=RuleLevel.ERROR,
-            message="No memory URIs", raw=[r"memory://\S+"],
+            id="memory-uri",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.ERROR,
+            message="No memory URIs",
+            raw=[r"memory://\S+"],
         )
         text = "See memory://foo/bar for details."
         matches = evaluator.evaluate(rule, text, [text])
@@ -81,7 +87,9 @@ class TestExistence:
 
     def test_no_match(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-very", type=RuleType.EXISTENCE, level=RuleLevel.WARNING,
+            id="no-very",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.WARNING,
             tokens=["very"],
         )
         matches = evaluator.evaluate(rule, "This is important.", ["This is important."])
@@ -89,8 +97,11 @@ class TestExistence:
 
     def test_action_info(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-very", type=RuleType.EXISTENCE, level=RuleLevel.SUGGESTION,
-            tokens=["very"], action={"name": "remove", "params": ""},
+            id="no-very",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.SUGGESTION,
+            tokens=["very"],
+            action={"name": "remove", "params": ""},
         )
         matches = evaluator.evaluate(rule, "very good", ["very good"])
         assert len(matches) == 1
@@ -104,7 +115,9 @@ class TestSubstitution:
     def test_swap_match(self, evaluator: RuleEvaluator) -> None:
         """Validates: FR-PERSONA-02 (P-rt-03)."""
         rule = RuleConfig(
-            id="brit-spelling", type=RuleType.SUBSTITUTION, level=RuleLevel.WARNING,
+            id="brit-spelling",
+            type=RuleType.SUBSTITUTION,
+            level=RuleLevel.WARNING,
             swap={"color": "colour", "organize": "organise"},
         )
         matches = evaluator.evaluate(rule, "The color is nice.", ["The color is nice."])
@@ -115,7 +128,9 @@ class TestSubstitution:
 
     def test_no_swap_match(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="brit-spelling", type=RuleType.SUBSTITUTION, level=RuleLevel.WARNING,
+            id="brit-spelling",
+            type=RuleType.SUBSTITUTION,
+            level=RuleLevel.WARNING,
             swap={"color": "colour"},
         )
         matches = evaluator.evaluate(rule, "The colour is nice.", ["The colour is nice."])
@@ -123,7 +138,9 @@ class TestSubstitution:
 
     def test_empty_swap(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="empty", type=RuleType.SUBSTITUTION, level=RuleLevel.WARNING,
+            id="empty",
+            type=RuleType.SUBSTITUTION,
+            level=RuleLevel.WARNING,
         )
         matches = evaluator.evaluate(rule, "Hello world.", ["Hello world."])
         assert matches == []
@@ -135,8 +152,11 @@ class TestSubstitution:
 class TestOccurrence:
     def test_exceeds_max(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="too-many-very", type=RuleType.OCCURRENCE, level=RuleLevel.WARNING,
-            tokens=["very"], max=2,
+            id="too-many-very",
+            type=RuleType.OCCURRENCE,
+            level=RuleLevel.WARNING,
+            tokens=["very"],
+            max=2,
         )
         text = "very very very important"
         matches = evaluator.evaluate(rule, text, [text])
@@ -144,8 +164,11 @@ class TestOccurrence:
 
     def test_within_max(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="too-many-very", type=RuleType.OCCURRENCE, level=RuleLevel.WARNING,
-            tokens=["very"], max=2,
+            id="too-many-very",
+            type=RuleType.OCCURRENCE,
+            level=RuleLevel.WARNING,
+            tokens=["very"],
+            max=2,
         )
         text = "very very important"
         matches = evaluator.evaluate(rule, text, [text])
@@ -158,7 +181,9 @@ class TestOccurrence:
 class TestRepetition:
     def test_detects_repeated_word(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-repeat", type=RuleType.REPETITION, level=RuleLevel.WARNING,
+            id="no-repeat",
+            type=RuleType.REPETITION,
+            level=RuleLevel.WARNING,
         )
         text = "The cat sat on the mat."
         matches = evaluator.evaluate(rule, text, [text])
@@ -167,7 +192,9 @@ class TestRepetition:
 
     def test_no_repetition(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-repeat", type=RuleType.REPETITION, level=RuleLevel.WARNING,
+            id="no-repeat",
+            type=RuleType.REPETITION,
+            level=RuleLevel.WARNING,
         )
         text = "Each word is unique here."
         matches = evaluator.evaluate(rule, text, [text])
@@ -177,7 +204,9 @@ class TestRepetition:
 class TestConsistency:
     def test_flags_inconsistent_usage(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="spelling", type=RuleType.CONSISTENCY, level=RuleLevel.WARNING,
+            id="spelling",
+            type=RuleType.CONSISTENCY,
+            level=RuleLevel.WARNING,
             either={"color": "colour"},
         )
         text = "The color is nice. I like the colour too."
@@ -187,7 +216,9 @@ class TestConsistency:
 
     def test_no_inconsistency(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="spelling", type=RuleType.CONSISTENCY, level=RuleLevel.WARNING,
+            id="spelling",
+            type=RuleType.CONSISTENCY,
+            level=RuleLevel.WARNING,
             either={"color": "colour"},
         )
         text = "The colour is nice. I like the colour too."
@@ -198,8 +229,11 @@ class TestConsistency:
 class TestConditional:
     def test_trigger_without_consequent(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="fig-ref", type=RuleType.CONDITIONAL, level=RuleLevel.ERROR,
-            tokens=["Figure"], match=r"Fig\.\s*\d+",
+            id="fig-ref",
+            type=RuleType.CONDITIONAL,
+            level=RuleLevel.ERROR,
+            tokens=["Figure"],
+            match=r"Fig\.\s*\d+",
         )
         text = "See Figure for details."
         matches = evaluator.evaluate(rule, text, [text])
@@ -207,8 +241,11 @@ class TestConditional:
 
     def test_trigger_with_consequent(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="fig-ref", type=RuleType.CONDITIONAL, level=RuleLevel.ERROR,
-            tokens=["Figure"], match=r"Fig\.\s*\d+",
+            id="fig-ref",
+            type=RuleType.CONDITIONAL,
+            level=RuleLevel.ERROR,
+            tokens=["Figure"],
+            match=r"Fig\.\s*\d+",
         )
         text = "See Figure for details. Refer to Fig. 1."
         matches = evaluator.evaluate(rule, text, [text])
@@ -221,8 +258,11 @@ class TestConditional:
 class TestCapitalization:
     def test_title_case_pass(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="heading-case", type=RuleType.CAPITALIZATION, level=RuleLevel.ERROR,
-            match="$title", scope="heading",
+            id="heading-case",
+            type=RuleType.CAPITALIZATION,
+            level=RuleLevel.ERROR,
+            match="$title",
+            scope="heading",
         )
         text = "The Quick Brown Fox\nBody text here."
         matches = evaluator.evaluate(rule, text, [text])
@@ -230,8 +270,11 @@ class TestCapitalization:
 
     def test_title_case_fail(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="heading-case", type=RuleType.CAPITALIZATION, level=RuleLevel.ERROR,
-            match="$title", scope="heading",
+            id="heading-case",
+            type=RuleType.CAPITALIZATION,
+            level=RuleLevel.ERROR,
+            match="$title",
+            scope="heading",
         )
         text = "the quick brown fox\nBody text here."
         matches = evaluator.evaluate(rule, text, [text])
@@ -239,8 +282,11 @@ class TestCapitalization:
 
     def test_sentence_case_pass(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="heading-case", type=RuleType.CAPITALIZATION, level=RuleLevel.ERROR,
-            match="$sentence", scope="heading",
+            id="heading-case",
+            type=RuleType.CAPITALIZATION,
+            level=RuleLevel.ERROR,
+            match="$sentence",
+            scope="heading",
         )
         text = "Hello world"
         matches = evaluator.evaluate(rule, text, [text])
@@ -250,7 +296,9 @@ class TestCapitalization:
 class TestSequence:
     def test_returns_empty_placeholder(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="pos-seq", type=RuleType.SEQUENCE, level=RuleLevel.WARNING,
+            id="pos-seq",
+            type=RuleType.SEQUENCE,
+            level=RuleLevel.WARNING,
         )
         matches = evaluator.evaluate(rule, "Hello world.", ["Hello world."])
         assert matches == []
@@ -259,7 +307,9 @@ class TestSequence:
 class TestScript:
     def test_raises_not_implemented(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="custom-script", type=RuleType.SCRIPT, level=RuleLevel.ERROR,
+            id="custom-script",
+            type=RuleType.SCRIPT,
+            level=RuleLevel.ERROR,
         )
         with pytest.raises(NotImplementedError, match=r"excluded in v1\.0"):
             evaluator.evaluate(rule, "Hello.", ["Hello."])
@@ -271,23 +321,31 @@ class TestScript:
 class TestExtensions:
     def test_llm_eval_placeholder(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="t5-check", type=RuleType.LLM_EVAL, level=RuleLevel.WARNING,
-            prompt="Is this formal?", target="yes",
+            id="t5-check",
+            type=RuleType.LLM_EVAL,
+            level=RuleLevel.WARNING,
+            prompt="Is this formal?",
+            target="yes",
         )
         matches = evaluator.evaluate(rule, "Hello.", ["Hello."])
         assert matches == []
 
     def test_tone_placeholder(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="tone-check", type=RuleType.TONE, level=RuleLevel.WARNING,
-            dimension="formality", min=0.7,
+            id="tone-check",
+            type=RuleType.TONE,
+            level=RuleLevel.WARNING,
+            dimension="formality",
+            min=0.7,
         )
         matches = evaluator.evaluate(rule, "Hello.", ["Hello."])
         assert matches == []
 
     def test_brand_voice_placeholder(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="brand-check", type=RuleType.BRAND_VOICE, level=RuleLevel.WARNING,
+            id="brand-check",
+            type=RuleType.BRAND_VOICE,
+            level=RuleLevel.WARNING,
         )
         matches = evaluator.evaluate(rule, "Hello.", ["Hello."])
         assert matches == []
@@ -299,8 +357,11 @@ class TestExtensions:
 class TestScopeFiltering:
     def test_sentence_scope(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-very", type=RuleType.EXISTENCE, level=RuleLevel.WARNING,
-            tokens=["very"], scope="sentence",
+            id="no-very",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.WARNING,
+            tokens=["very"],
+            scope="sentence",
         )
         sentences = ["This is very good.", "This is fine."]
         text = " ".join(sentences)
@@ -309,8 +370,11 @@ class TestScopeFiltering:
 
     def test_paragraph_scope(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="no-very", type=RuleType.EXISTENCE, level=RuleLevel.WARNING,
-            tokens=["very"], scope="paragraph",
+            id="no-very",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.WARNING,
+            tokens=["very"],
+            scope="paragraph",
         )
         text = "This is very good.\n\nThis is fine."
         sentences = ["This is very good.", "This is fine."]
@@ -319,8 +383,11 @@ class TestScopeFiltering:
 
     def test_raw_scope(self, evaluator: RuleEvaluator) -> None:
         rule = RuleConfig(
-            id="raw-check", type=RuleType.EXISTENCE, level=RuleLevel.WARNING,
-            raw=[r"memory://\S+"], scope="raw",
+            id="raw-check",
+            type=RuleType.EXISTENCE,
+            level=RuleLevel.WARNING,
+            raw=[r"memory://\S+"],
+            scope="raw",
         )
         text = "See memory://test for info."
         matches = evaluator.evaluate(rule, text, [text])

@@ -92,26 +92,17 @@ class TestMissingRequiredField:
     def test_missing_name(self, validator: PersonaValidator) -> None:
         result = validator.validate_yaml('version: "1.0.0"')
         assert not result.valid
-        assert any(
-            e.code == MISSING_REQUIRED_FIELD and "name" in e.path
-            for e in result.errors
-        )
+        assert any(e.code == MISSING_REQUIRED_FIELD and "name" in e.path for e in result.errors)
 
     def test_missing_version(self, validator: PersonaValidator) -> None:
         result = validator.validate_yaml("name: test")
         assert not result.valid
-        assert any(
-            e.code == MISSING_REQUIRED_FIELD and "version" in e.path
-            for e in result.errors
-        )
+        assert any(e.code == MISSING_REQUIRED_FIELD and "version" in e.path for e in result.errors)
 
     def test_missing_both(self, validator: PersonaValidator) -> None:
         result = validator.validate_yaml("description: hello")
         assert not result.valid
-        missing_codes = [
-            e for e in result.errors
-            if e.code == MISSING_REQUIRED_FIELD
-        ]
+        missing_codes = [e for e in result.errors if e.code == MISSING_REQUIRED_FIELD]
         assert len(missing_codes) >= 2
 
 
@@ -263,7 +254,8 @@ class TestInvalidWeightsSum:
     """Test INVALID_WEIGHTS_SUM error code."""
 
     def test_weights_not_summing_to_one(
-        self, validator: PersonaValidator,
+        self,
+        validator: PersonaValidator,
     ) -> None:
         yaml_content = textwrap.dedent("""\
             name: test
@@ -302,7 +294,8 @@ class TestSecretDetected:
         assert any(w.code == SECRET_DETECTED for w in result.warnings)
 
     def test_secrets_are_warnings_not_errors(
-        self, validator: PersonaValidator,
+        self,
+        validator: PersonaValidator,
     ) -> None:
         yaml_content = textwrap.dedent("""\
             name: test
@@ -318,7 +311,8 @@ class TestExampleMismatch:
     """Test EXAMPLE_MISMATCH error code."""
 
     def test_valid_example_triggers_rule(
-        self, validator: PersonaValidator,
+        self,
+        validator: PersonaValidator,
     ) -> None:
         yaml_content = textwrap.dedent("""\
             name: test
@@ -339,7 +333,8 @@ class TestExampleMismatch:
         assert any(e.code == EXAMPLE_MISMATCH for e in result.errors)
 
     def test_invalid_example_does_not_trigger(
-        self, validator: PersonaValidator,
+        self,
+        validator: PersonaValidator,
     ) -> None:
         yaml_content = textwrap.dedent("""\
             name: test
@@ -360,7 +355,8 @@ class TestExampleMismatch:
         assert any(e.code == EXAMPLE_MISMATCH for e in result.errors)
 
     def test_correct_examples_pass(
-        self, validator: PersonaValidator,
+        self,
+        validator: PersonaValidator,
     ) -> None:
         yaml_content = textwrap.dedent("""\
             name: test

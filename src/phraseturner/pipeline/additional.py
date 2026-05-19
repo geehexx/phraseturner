@@ -31,46 +31,53 @@ _HEDGE_PHRASES: tuple[str, ...] = (
 )
 """Multi-word hedge phrases matched before single-word hedges."""
 
-_HEDGE_WORDS: frozenset[str] = frozenset({
-    "perhaps",
-    "maybe",
-    "possibly",
-    "somewhat",
-    "rather",
-    "quite",
-    "fairly",
-    "slightly",
-    "apparently",
-    "seemingly",
-    "arguably",
-    "presumably",
-    "supposedly",
-    "generally",
-    "typically",
-    "usually",
-    "often",
-    "sometimes",
-    "might",
-    "could",
-    "may",
-    "seem",
-    "appear",
-})
+_HEDGE_WORDS: frozenset[str] = frozenset(
+    {
+        "perhaps",
+        "maybe",
+        "possibly",
+        "somewhat",
+        "rather",
+        "quite",
+        "fairly",
+        "slightly",
+        "apparently",
+        "seemingly",
+        "arguably",
+        "presumably",
+        "supposedly",
+        "generally",
+        "typically",
+        "usually",
+        "often",
+        "sometimes",
+        "might",
+        "could",
+        "may",
+        "seem",
+        "appear",
+    }
+)
 """Single-word hedges matched case-insensitively. FR-PIPELINE-08."""
 
 # Pre-compiled patterns for multi-word hedge phrases (case-insensitive).
 _HEDGE_PHRASE_PATTERNS: tuple[re.Pattern[str], ...] = tuple(
-    re.compile(rf"\b{re.escape(phrase)}\b", re.IGNORECASE)
-    for phrase in _HEDGE_PHRASES
+    re.compile(rf"\b{re.escape(phrase)}\b", re.IGNORECASE) for phrase in _HEDGE_PHRASES
 )
 
 # ---------------------------------------------------------------------------
 # Content POS tags for information density
 # ---------------------------------------------------------------------------
 
-_CONTENT_POS_TAGS: frozenset[str] = frozenset({
-    "NOUN", "VERB", "ADJ", "ADV", "PROPN",
-})
+_CONTENT_POS_TAGS: frozenset[str] = frozenset(
+    {
+        "NOUN",
+        "VERB",
+        "ADJ",
+        "ADV",
+        "PROPN",
+    }
+)
 """spaCy POS tags considered content words. AC-FR-PIPELINE-08.2."""
 
 # ---------------------------------------------------------------------------
@@ -78,7 +85,13 @@ _CONTENT_POS_TAGS: frozenset[str] = frozenset({
 # ---------------------------------------------------------------------------
 
 _ABSTRACT_SUFFIXES: tuple[str, ...] = (
-    "ness", "ity", "ment", "tion", "sion", "ance", "ence",
+    "ness",
+    "ity",
+    "ment",
+    "tion",
+    "sion",
+    "ance",
+    "ence",
 )
 """Suffixes indicating abstract nouns. AC-FR-PIPELINE-08.3."""
 
@@ -256,7 +269,7 @@ def _compute_specificity(
     # Question heuristic: sentences ending with '?' have fewer named
     # entities/numbers by nature — apply a floor to avoid over-penalising.
     # AC-FR-PIPELINE-08.3.
-    if sentence.rstrip().endswith('?'):
+    if sentence.rstrip().endswith("?"):
         return max(raw, _QUESTION_SPECIFICITY_FLOOR)
     return raw
 
@@ -296,11 +309,7 @@ def _specificity_from_spacy(sent_span: Any) -> float:
 
     # Weighted combination: higher entity/number = more specific,
     # lower abstract ratio = more specific
-    raw = (
-        entity_density * 0.4
-        + number_presence * 0.3
-        + (1.0 - abstract_ratio) * 0.3
-    )
+    raw = entity_density * 0.4 + number_presence * 0.3 + (1.0 - abstract_ratio) * 0.3
     return max(0.0, min(1.0, raw))
 
 
@@ -328,10 +337,7 @@ def _specificity_heuristic(sentence: str) -> float:
     # Abstract noun ratio (suffix-based)
     alpha_words = [w.lower().strip(".,;:!?\"'()[]") for w in words if w.isalpha()]
     noun_like = [w for w in alpha_words if len(w) >= 4]  # noqa: PLR2004
-    abstract_count = sum(
-        1 for w in noun_like
-        if any(w.endswith(s) for s in _ABSTRACT_SUFFIXES)
-    )
+    abstract_count = sum(1 for w in noun_like if any(w.endswith(s) for s in _ABSTRACT_SUFFIXES))
     abstract_ratio = abstract_count / len(noun_like) if noun_like else 0.0
 
     # No entity detection without spaCy — entity_density = 0
@@ -410,19 +416,54 @@ def _jaccard(set_a: set[str], set_b: set[str]) -> float:
 _STRIP_PUNCT = ".,;:!?()[]"
 
 # Pronouns that can bridge references between sentences.
-_BRIDGING_PRONOUNS: frozenset[str] = frozenset({
-    "he", "she", "it", "they", "his", "her", "its", "their",
-    "him", "them", "this", "that", "these", "those",
-})
+_BRIDGING_PRONOUNS: frozenset[str] = frozenset(
+    {
+        "he",
+        "she",
+        "it",
+        "they",
+        "his",
+        "her",
+        "its",
+        "their",
+        "him",
+        "them",
+        "this",
+        "that",
+        "these",
+        "those",
+    }
+)
 
 # Discourse markers indicating logical transitions.
-_DISCOURSE_MARKERS: frozenset[str] = frozenset({
-    "however", "therefore", "furthermore", "moreover", "additionally",
-    "consequently", "nevertheless", "nonetheless", "meanwhile",
-    "subsequently", "accordingly", "thus", "hence", "also",
-    "besides", "instead", "otherwise", "similarly", "likewise",
-    "although", "whereas", "while", "because", "since",
-})
+_DISCOURSE_MARKERS: frozenset[str] = frozenset(
+    {
+        "however",
+        "therefore",
+        "furthermore",
+        "moreover",
+        "additionally",
+        "consequently",
+        "nevertheless",
+        "nonetheless",
+        "meanwhile",
+        "subsequently",
+        "accordingly",
+        "thus",
+        "hence",
+        "also",
+        "besides",
+        "instead",
+        "otherwise",
+        "similarly",
+        "likewise",
+        "although",
+        "whereas",
+        "while",
+        "because",
+        "since",
+    }
+)
 
 
 def _has_pronoun_bridge(sent_b: str) -> bool:
@@ -593,7 +634,10 @@ def analyze_additional(
         if i < n_sentences - 1:
             span_next = spans[i + 1] if (i + 1) < len(spans) else None
             coherence = _compute_coherence_pair(
-                span, span_next, sentence, sentences[i + 1],
+                span,
+                span_next,
+                sentence,
+                sentences[i + 1],
             )
             coherences.append(coherence)
 
@@ -608,15 +652,9 @@ def analyze_additional(
         )
 
     # Overall aggregates
-    overall_density = (
-        sum(densities) / len(densities) if densities else 0.0
-    )
-    overall_specificity = (
-        sum(specificities) / len(specificities) if specificities else 0.0
-    )
-    mean_coherence = (
-        sum(coherences) / len(coherences) if coherences else 0.0
-    )
+    overall_density = sum(densities) / len(densities) if densities else 0.0
+    overall_specificity = sum(specificities) / len(specificities) if specificities else 0.0
+    mean_coherence = sum(coherences) / len(coherences) if coherences else 0.0
 
     return AdditionalSignalsResult(
         per_sentence=per_sentence,

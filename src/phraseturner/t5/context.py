@@ -234,13 +234,9 @@ def build_context(  # noqa: PLR0913
     prev_sentence: str | None = None
     next_sentence: str | None = None
     if sentence_idx > 0:
-        prev_sentence = _truncate_to_tokens(
-            sentences[sentence_idx - 1], _MAX_NEIGHBOR_TOKENS
-        )
+        prev_sentence = _truncate_to_tokens(sentences[sentence_idx - 1], _MAX_NEIGHBOR_TOKENS)
     if sentence_idx < len(sentences) - 1:
-        next_sentence = _truncate_to_tokens(
-            sentences[sentence_idx + 1], _MAX_NEIGHBOR_TOKENS
-        )
+        next_sentence = _truncate_to_tokens(sentences[sentence_idx + 1], _MAX_NEIGHBOR_TOKENS)
 
     readability_grade: float | None = None
     if readability_grades is not None and sentence_idx < len(readability_grades):
@@ -426,9 +422,7 @@ class T5Runner:
             Tuple of (decoded output text, confidence score).
             Confidence is 1.0 for greedy decoding.
         """
-        return await asyncio.to_thread(
-            self._infer, prompt, max_tokens, use_beam
-        )
+        return await asyncio.to_thread(self._infer, prompt, max_tokens, use_beam)
 
     def _infer(
         self,
@@ -469,12 +463,8 @@ class T5Runner:
         encoder_hidden = encoder_outputs[0]
 
         if use_beam:
-            return self._beam_search_decode(
-                encoder_hidden, attention_mask, max_tokens
-            )
-        return self._greedy_decode(
-            encoder_hidden, attention_mask, max_tokens
-        )
+            return self._beam_search_decode(encoder_hidden, attention_mask, max_tokens)
+        return self._greedy_decode(encoder_hidden, attention_mask, max_tokens)
 
     def _greedy_decode(
         self,
@@ -612,7 +602,11 @@ class T5Runner:
             candidates: list[tuple[list[int], float]] = []
             for token_ids, cum_log_prob in beams:
                 new_cands, new_done = self._expand_beam(
-                    token_ids, cum_log_prob, encoder_hidden, attention_mask, num_beams,
+                    token_ids,
+                    cum_log_prob,
+                    encoder_hidden,
+                    attention_mask,
+                    num_beams,
                 )
                 candidates.extend(new_cands)
                 completed.extend(new_done)

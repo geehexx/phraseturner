@@ -32,12 +32,14 @@ class TestMainEntryPoint:
     def test_main_function_is_callable(self) -> None:
         """main() is importable and callable."""
         from phraseturner.__main__ import main
+
         assert callable(main)
 
     def test_main_calls_mcp_run(self) -> None:
         """main() delegates to mcp.run()."""
         with patch("phraseturner.__main__.mcp") as mock_mcp:
             from phraseturner.__main__ import main
+
             main()
             mock_mcp.run.assert_called_once()
 
@@ -175,9 +177,13 @@ class TestMCPToolListing:
         tools = await mcp_client.list_tools()
         tool_names = {t.name for t in tools}
         expected = {
-            "analyze", "score", "compare",
-            "list_personas", "get_persona",
-            "create_persona", "validate_persona",
+            "analyze",
+            "score",
+            "compare",
+            "list_personas",
+            "get_persona",
+            "create_persona",
+            "validate_persona",
         }
         assert tool_names == expected
 
@@ -237,9 +243,15 @@ class TestMCPToolInvocation:
         assert "personas" in data
         names = {p["name"] for p in data["personas"]}
         expected_builtins = {
-            "slack-casual", "pr-review", "confluence-docs", "jira-ticket",
-            "email-professional", "blog-post", "technical-docs",
-            "executive-summary", "internal-references",
+            "slack-casual",
+            "pr-review",
+            "confluence-docs",
+            "jira-ticket",
+            "email-professional",
+            "blog-post",
+            "technical-docs",
+            "executive-summary",
+            "internal-references",
         }
         assert expected_builtins.issubset(names)
 
@@ -300,9 +312,12 @@ rules: []
             ("analyze", {"text": "Hello world."}),
             ("score", {"text": "Hello world."}),
             ("list_personas", {}),
-            ("validate_persona", {
-                "yaml_content": "name: x\nversion: '1.0'\ntone:\n  formality: 0.5\n",
-            }),
+            (
+                "validate_persona",
+                {
+                    "yaml_content": "name: x\nversion: '1.0'\ntone:\n  formality: 0.5\n",
+                },
+            ),
         ]
         for tool_name, args in calls:
             result = await mcp_client.call_tool(tool_name, args)

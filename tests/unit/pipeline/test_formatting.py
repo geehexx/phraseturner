@@ -261,13 +261,21 @@ class TestComputePersonaAlignment:
             name="test",
             version="1.0.0",
             tone=ToneConfig(
-                formality=1.0, confidence=1.0, warmth=1.0,
-                directness=1.0, energy=1.0, verbosity=1.0,
+                formality=1.0,
+                confidence=1.0,
+                warmth=1.0,
+                directness=1.0,
+                energy=1.0,
+                verbosity=1.0,
             ),
         )
         tone_scores = {
-            "formality": 0.0, "confidence": 0.0, "warmth": 0.0,
-            "directness": 0.0, "energy": 0.0, "verbosity": 0.0,
+            "formality": 0.0,
+            "confidence": 0.0,
+            "warmth": 0.0,
+            "directness": 0.0,
+            "energy": 0.0,
+            "verbosity": 0.0,
         }
         alignment = compute_persona_alignment(tone_scores, persona, [])
         assert alignment.overall_compliance == 0.0

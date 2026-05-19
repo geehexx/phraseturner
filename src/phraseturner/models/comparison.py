@@ -70,9 +70,7 @@ class ComparisonResult(BaseModel):
     overall_improvement: float
     sentence_alignment: list[SentenceAlignment]
     persona_compliance_delta: DimensionDelta | None = None
-    next_steps: list[str] = Field(
-        default_factory=list, max_length=3
-    )
+    next_steps: list[str] = Field(default_factory=list, max_length=3)
     metadata: AnalysisMetadata
 
 
@@ -92,9 +90,7 @@ class ConciseComparisonResult(BaseModel):
 
     semantic_similarity: float = Field(ge=0.0, le=1.0)
     overall_improvement: float
-    next_steps: list[str] = Field(
-        default_factory=list, max_length=3
-    )
+    next_steps: list[str] = Field(default_factory=list, max_length=3)
     metadata: AnalysisMetadata
 
 

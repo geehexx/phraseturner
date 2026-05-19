@@ -56,10 +56,7 @@ _FIXTURES_DIR = Path(__file__).parent / "fixtures"
 _SYNTHETIC_FIXTURE = _FIXTURES_DIR / "synthetic_calibration.json"
 
 # HC3 JSONL endpoint — English open-domain QA split, first 100 rows
-_HC3_JSONL_URL = (
-    "https://huggingface.co/datasets/Hello-SimpleAI/HC3/resolve/main/"
-    "all.jsonl"
-)
+_HC3_JSONL_URL = "https://huggingface.co/datasets/Hello-SimpleAI/HC3/resolve/main/all.jsonl"
 _HC3_MAX_PAIRS = 100
 
 
@@ -100,10 +97,12 @@ def _try_load_hc3_pairs(max_pairs: int = _HC3_MAX_PAIRS) -> list[dict[str, str]]
                     human_answers = row.get("human_answers", [])
                     chatgpt_answers = row.get("chatgpt_answers", [])
                     if human_answers and chatgpt_answers:
-                        pairs.append({
-                            "human": human_answers[0],
-                            "chatgpt": chatgpt_answers[0],
-                        })
+                        pairs.append(
+                            {
+                                "human": human_answers[0],
+                                "chatgpt": chatgpt_answers[0],
+                            }
+                        )
                 except (json.JSONDecodeError, KeyError):
                     continue
             return pairs if pairs else None
@@ -144,6 +143,7 @@ async def _run_batch(
         List of metric dicts with ``naturalness``, ``ai_probability``,
         ``ai_classification``, and ``latency_ms`` keys.
     """
+
     async def _analyse_one(text: str) -> dict[str, float]:
         t0 = time.perf_counter()
         result = await run_pipeline(text, ctx, quick_score=True)
@@ -402,9 +402,7 @@ async def test_pipeline_latency_within_budget(
 
     mean_ms = statistics.mean(latencies)
     p95_ms = (
-        sorted(latencies)[int(len(latencies) * 0.95)]
-        if len(latencies) >= 20
-        else max(latencies)
+        sorted(latencies)[int(len(latencies) * 0.95)] if len(latencies) >= 20 else max(latencies)
     )
 
     print("\n=== Warm-Call Latency (Tier 0, quick_score=True) ===")
@@ -432,11 +430,7 @@ def test_all_samples_produce_valid_results(
     all_texts = calibration_data["human"] + calibration_data["ai"]
     results = pipeline_results["human"] + pipeline_results["ai"]
 
-    failed = [
-        (i, r)
-        for i, r in enumerate(results)
-        if r["composite_score"] == 0.0
-    ]
+    failed = [(i, r) for i, r in enumerate(results) if r["composite_score"] == 0.0]
 
     print(f"\n=== Pipeline Robustness: {len(results)} samples ===")
     print(f"  Valid results: {len(results) - len(failed)}/{len(results)}")
@@ -480,7 +474,7 @@ def test_score_report(
     print("\n--- Human Samples ---")
     human_samples = fixture.get("human_samples", [])
     for i, (_, result) in enumerate(zip(human_texts, human_results, strict=False)):
-        label = human_samples[i]["style"] if i < len(human_samples) else f"h{i+1:02d}"
+        label = human_samples[i]["style"] if i < len(human_samples) else f"h{i + 1:02d}"
         print(
             f"  [{label:30s}] "
             f"composite={result['composite_score']:5.1f}  "
@@ -491,7 +485,7 @@ def test_score_report(
     print("\n--- AI-Typical Samples ---")
     ai_samples = fixture.get("ai_typical_samples", [])
     for i, (_, result) in enumerate(zip(ai_texts, ai_results, strict=False)):
-        label = ai_samples[i]["style"] if i < len(ai_samples) else f"a{i+1:02d}"
+        label = ai_samples[i]["style"] if i < len(ai_samples) else f"a{i + 1:02d}"
         print(
             f"  [{label:30s}] "
             f"composite={result['composite_score']:5.1f}  "

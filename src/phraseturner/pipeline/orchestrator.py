@@ -142,7 +142,6 @@ async def _run_stage1(
     )
 
 
-
 # ---------------------------------------------------------------------------
 # Helper: unpack Stage 1+2 gather results
 # ---------------------------------------------------------------------------
@@ -274,7 +273,6 @@ def _compute_dimension_scores(
     return scores
 
 
-
 # ---------------------------------------------------------------------------
 # Helper: build per-sentence analysis objects
 # ---------------------------------------------------------------------------
@@ -387,7 +385,6 @@ def _build_metadata(
     )
 
 
-
 # ---------------------------------------------------------------------------
 # Helper: run Stage 5 formatting
 # ---------------------------------------------------------------------------
@@ -414,17 +411,19 @@ def _run_stage5(  # noqa: PLR0913
     try:
         analysis_data: dict[str, Any] = {"sentences": []}
         for sa in sentence_analyses:
-            analysis_data["sentences"].append({
-                "text": sa.text,
-                "word_count": sa.word_count,
-                "readability_grade": sa.readability_grade,
-                "passive_voice": sa.passive_voice,
-                "vader_compound": sa.vader_compound,
-                "information_density": sa.information_density,
-                "hedge_count": sa.hedge_count,
-                "specificity": sa.specificity,
-                "coherence_to_next": sa.coherence_to_next,
-            })
+            analysis_data["sentences"].append(
+                {
+                    "text": sa.text,
+                    "word_count": sa.word_count,
+                    "readability_grade": sa.readability_grade,
+                    "passive_voice": sa.passive_voice,
+                    "vader_compound": sa.vader_compound,
+                    "information_density": sa.information_density,
+                    "hedge_count": sa.hedge_count,
+                    "specificity": sa.specificity,
+                    "coherence_to_next": sa.coherence_to_next,
+                }
+            )
 
         if results.tone is not None:
             analysis_data["tone_scores"] = compute_tone_dimensions(
@@ -495,12 +494,10 @@ def _generate_next_steps(
 
     if persona is not None:
         steps.append(
-            f"Call `get_persona {persona.name}` to review full tone "
-            "targets for this persona"
+            f"Call `get_persona {persona.name}` to review full tone targets for this persona"
         )
 
     return steps[:3]
-
 
 
 # ---------------------------------------------------------------------------
@@ -566,9 +563,7 @@ def _populate_t5_analysis(  # noqa: PLR0912
     if "persona_compliance" in task_outputs:
         out = task_outputs["persona_compliance"]
         if isinstance(out, T5Output):
-            compliance_out, issue = parse_persona_compliance_output(
-                out.label, out.confidence
-            )
+            compliance_out, issue = parse_persona_compliance_output(out.label, out.confidence)
             updates["persona_compliance"] = compliance_out.label
             updates["persona_compliance_confidence"] = compliance_out.confidence
             updates["persona_issue"] = issue
@@ -707,8 +702,15 @@ async def _run_stage3_t5(
     t5_results: list[T5SentenceAnalysis] = []
     for sent_idx, sentence in enumerate(sentences):
         result = await _run_t5_for_sentence(
-            sent_idx, sentence, sentences, tasks, runner,
-            readability_grades, vader_compounds, ai_signal, ctx.persona,
+            sent_idx,
+            sentence,
+            sentences,
+            tasks,
+            runner,
+            readability_grades,
+            vader_compounds,
+            ai_signal,
+            ctx.persona,
         )
         t5_results.append(result)
 
@@ -788,7 +790,10 @@ async def run_pipeline(  # noqa: PLR0913
         _SentenceBuilder(sentences=sentences, results=results, t5_results=t5_results),
     )
     suggestions, persona_alignment, s5_failed = _run_stage5(
-        sentence_analyses, results, ctx.persona, include_suggestions,
+        sentence_analyses,
+        results,
+        ctx.persona,
+        include_suggestions,
         doc=stage0.doc,
         sentences=sentences,
         text=text,
@@ -797,7 +802,11 @@ async def run_pipeline(  # noqa: PLR0913
 
     # ── Build metadata and return ──────────────────────────────────
     metadata = _build_metadata(
-        start_time, stage0.token_count, ctx, failed_stages, results.ai_detection,
+        start_time,
+        stage0.token_count,
+        ctx,
+        failed_stages,
+        results.ai_detection,
     )
     next_steps = _generate_next_steps(health_score, ctx.persona, quick_score)
 
