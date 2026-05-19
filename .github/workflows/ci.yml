@@ -42,7 +42,7 @@ jobs:
         run: uv run pytest --cov=phraseturner --cov-report=xml --cov-fail-under=80 -q --timeout=30
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
