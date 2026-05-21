@@ -33,6 +33,3 @@ venv/
 .envrc
 !.envrc.example
 
-# Claude Code agent config — private, not for public repos
-.claude/
-CLAUDE.md
