@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.0 (2026-05-21)
+
+
+### Features
+
+* **claude:** migrate from .kiro/ to Claude Code config layout ([#1](https://github.com/geehexx/phraseturner/issues/1)) ([e63d767](https://github.com/geehexx/phraseturner/commit/e63d76766331089d5ed3ada1b1f208b33e056df3))
+* initial project scaffolding ([183d886](https://github.com/geehexx/phraseturner/commit/183d8862c82a79c5d8b1a381f0491b0a7c59be5a))
+* **personas:** add agent-coordination personas (fork-brief, decision-note, panel-vote-dissent) ([32feee2](https://github.com/geehexx/phraseturner/commit/32feee2719e928674074dda5250bbd595b79ff8c))
+* **personas:** add agent-coordination personas (fork-brief, decision-note, panel-vote-dissent) ([2641a45](https://github.com/geehexx/phraseturner/commit/2641a4585e278df7510dc683cf0928250a3ebb8f))
+
+
+### Bug Fixes
+
+* add exc_info=True to non-pipeline exception catches in tools.py and validation.py ([0bfd323](https://github.com/geehexx/phraseturner/commit/0bfd323b3bb6c37ed17aa1eb6b2299a37a58c9e4))
+* **calibration:** share pipeline results across tests to prevent timeout ([d1dba74](https://github.com/geehexx/phraseturner/commit/d1dba74c9350978e8316a83f270081599c82236d))
+* **naturalness:** guard zero-variance arrays before scipy skew call ([d1c089e](https://github.com/geehexx/phraseturner/commit/d1c089ea73c69c007df42621dd0ff6af7c9f50fb))
+* **personas:** add fork-brief/decision-note/panel-vote channels to enum + fix raw fields ([2f4c856](https://github.com/geehexx/phraseturner/commit/2f4c8564daba4b6de9fdf03a815c61dc56eb167b))
+* wire T5 results into pipeline, harden assert statements, add SECURITY.md and dependabot ([441e0b7](https://github.com/geehexx/phraseturner/commit/441e0b747d7170005c4ed0344d17251523853d7c))
+
+
+### Documentation
+
+* **contributing:** improve opener tone — remove informal greeting ([05c914e](https://github.com/geehexx/phraseturner/commit/05c914eb435f98b5ba08375fa4203e5d088a2c64))
+
 ## [Unreleased]
 
 ## [0.1.0] - 2026-04-16

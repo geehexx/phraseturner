@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "phraseturner"
-version = "0.2.0"
+version = "0.1.0"
 description = "Text analysis MCP server with configurable personas for readability, naturalness, tone, and AI detection"
 readme = "README.md"
 license = "MIT"
